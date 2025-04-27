@@ -247,10 +247,9 @@ body {
     position: relative; /* Crucial for absolute children */
     width: 100%;
     min-height: 180px; /* Adjust as needed */
-    margin-bottom: 15px;
+    margin-bottom: 15px auto;
     overflow-x: auto;   /* Allow horizontal scroll */
-    overflow-y: hidden; /* Prevent vertical scroll */
-    padding: 0 15px;    /* Padding for container scroll */
+    overflow: auto; /* Allow vertical scroll if needed */
     box-sizing: border-box;
 }
 

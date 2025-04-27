@@ -95,7 +95,7 @@ const avlConfig = {
 
   setup: (data) => {
     const extraVisualizationArea = document.getElementById('extra-visualization-area');
-    extraVisualizationArea.innerHTML = '';
+    extraVisualizationArea.innerHTML = ''; // Clear previous content
     const mainVisualizationArea = document.getElementById('visualization-area');
     if (mainVisualizationArea) mainVisualizationArea.style.display = 'none';
 
@@ -280,11 +280,21 @@ const avlConfig = {
     });
 
 
-    if (!root) { return { steps: [], elements: {} }; }
+    if (!root) {
+        extraVisualizationArea.innerHTML = '<p>Failed to generate AVL tree.</p>';
+        return { steps: [], elements: {} };
+    }
 
     // --- 3. Create Containers ---
-    const treeContainer = document.createElement('div'); /* ... */ extraVisualizationArea.appendChild(treeContainer);
-    const nodesContainer = document.createElement('div'); /* ... */ treeContainer.appendChild(nodesContainer);
+    // This part seems standard and likely correct. It ensures the DOM structure exists.
+    const treeContainer = document.createElement('div');
+    treeContainer.className = 'tree-visualization-container'; // Ensure CSS targets this
+    extraVisualizationArea.appendChild(treeContainer);
+
+    const nodesContainer = document.createElement('div');
+    nodesContainer.id = 'tree-nodes-container';
+    nodesContainer.className = 'tree-nodes-container'; // Ensure CSS targets this
+    treeContainer.appendChild(nodesContainer);
 
     // --- 4. Calculate Final Layout and Create DOM Elements ---
     let finalNodeElements = {}; currentInorderIndex = 0;
@@ -303,17 +313,24 @@ const avlConfig = {
         node.level = finalLevels[node.id] ?? node.level; // Get final level
         node.y = node.level * verticalGap + 30;
         const availableWidthPercent = 100 - (2 * horizontalPaddingPercent);
+        // Calculate X position based on inorder traversal index
         node.x = horizontalPaddingPercent + (finalTotalNodes <= 1 ? availableWidthPercent / 2 : (node.inorderIndex / (finalTotalNodes - 1)) * availableWidthPercent);
 
         const nodeDiv = document.createElement('div');
         nodeDiv.id = node.id; nodeDiv.className = 'tree-node'; nodeDiv.textContent = node.value; nodeDiv.title = `Node Value: ${node.value}`;
-        nodeDiv.style.top = `${node.y}px`; nodeDiv.style.left = `${node.x}%`;
+        // Apply calculated positions
+        nodeDiv.style.top = `${node.y}px`;
+        nodeDiv.style.left = `${node.x}%`;
+        // Ensure correct transform for centering based on percentage left
+        // This part is crucial for centering the node at its percentage 'left' position
+        nodeDiv.style.transform = 'translateX(-50%)';
+
         nodeDiv.style.opacity = '0'; nodeDiv.style.pointerEvents = 'none'; // Start hidden
-        nodesContainer.appendChild(nodeDiv);
+        nodesContainer.appendChild(nodeDiv); // Append to the correct container
         node.domElement = nodeDiv; finalNodeElements[node.id] = nodeDiv; // Add to final elements map
     });
-    nodesContainer.style.minHeight = `${(finalMaxLevel + 1) * verticalGap + 20}px`;
 
+    nodesContainer.style.minHeight = `${(finalMaxLevel + 1) * verticalGap + 30}px`;
 
     // --- Add initial state step ---
     Object.keys(finalNodeElements).forEach(id => nodeStates[id] = 'hidden');
