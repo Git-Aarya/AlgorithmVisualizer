@@ -51,11 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'counting-sort': typeof countingSortConfig !== 'undefined' ? countingSortConfig : null,
         'tree-traversals': typeof treeTraversalsConfig !== 'undefined' ? treeTraversalsConfig : null,
         'bst': typeof bstConfig !== 'undefined' ? bstConfig : null,
+        'avl': typeof avlConfig !== 'undefined' ? avlConfig : null,
         // Add entries for any other *implemented* algorithms you create files for
 
         // --- Placeholder definitions for algorithms NOT yet implemented ---
         // (Keep these directly defined here until you implement them)
-        'avl': { name: 'AVL Tree Rotations', code: '// TODO: AVL Tree Rotations Code', pseudocode: '// TODO: AVL Tree Rotations Pseudocode', setup: null, renderStep: null },
         'heap-ops': { name: 'Heap Operations (Insert/Extract)', code: '// TODO: Heap Operations Code', pseudocode: '// TODO: Heap Operations Pseudocode', setup: null, renderStep: null },
         'tree-bfs-dfs': { name: 'BFS & DFS (Trees)', code: '// TODO: Tree BFS/DFS Code', pseudocode: '// TODO: Tree BFS/DFS Pseudocode', setup: null, renderStep: null },
         'graph-bfs': { name: 'BFS (Graphs)', code: '// TODO: Graph BFS Code', pseudocode: '// TODO: Graph BFS Pseudocode', setup: null, renderStep: null },

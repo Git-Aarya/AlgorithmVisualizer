@@ -250,15 +250,14 @@ body {
     margin-bottom: 15px;
     overflow-x: auto;   /* Allow horizontal scroll */
     overflow-y: hidden; /* Prevent vertical scroll */
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 0 15px;    /* Padding for container scroll */
     box-sizing: border-box;
 }
 
-/* Base Tree Node Style */
+/* Base Tree Node Style - VISIBLE BY DEFAULT */
 .tree-node {
-    width: 35px;
-    height: 35px;
+    width: 35px; /* Fixed width */
+    height: 35px; /* Fixed height */
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -269,9 +268,9 @@ body {
     background-color: #fff; /* Default background: white */
     color: #1f2937; /* Default text: gray-800 */
     position: absolute; /* For layout */
-    transform: translateX(-50%); /* Centering */
+    /* transform: translateX(-50%); */ /* REMOVED - Using pixel positioning now */
     z-index: 1;
-    /* --- Visibility controlled by JS/opacity for BST --- */
+    /* --- Visibility controlled by JS/opacity for BST/AVL --- */
     opacity: 1; /* VISIBLE by default */
     pointer-events: auto; /* INTERACTIVE by default */
     /* --- Transitions --- */
@@ -283,118 +282,78 @@ body {
     color: #f3f4f6; /* gray-100 */
 }
 
-/* Node visible but not actively highlighted (Default visible state) */
-/* This style might not be needed if default .tree-node is sufficient when opacity=1 */
-/* .tree-node.visible {
-    opacity: 1;
-    pointer-events: auto;
-} */
-
 /* == Tree Traversal Highlighting States == */
 .tree-node.visiting {
-    opacity: 1; pointer-events: auto; /* Ensure visible */
-    border-color: #fbbf24; /* amber-400 */
-    transform: translateX(-50%) scale(1.1);
+    opacity: 1; pointer-events: auto; border-color: #fbbf24; /* amber-400 */
+    transform: scale(1.1); /* Scale from top-left */
 }
-.dark .tree-node.visiting {
-    border-color: #fcd34d; /* amber-300 */
-}
-.tree-node.processing { /* Used in Traversal */
-    opacity: 1; pointer-events: auto; /* Ensure visible */
-    background-color: #60a5fa; /* blue-400 */
-    border-color: #3b82f6; /* blue-500 */
-    color: white;
-    transform: translateX(-50%) scale(1.2);
-}
-.dark .tree-node.processing {
-     background-color: #3b82f6; /* blue-500 */
-     border-color: #2563eb; /* blue-600 */
-}
-.tree-node.visited { /* Node fully processed in Traversal */
-    opacity: 0.6; /* Dim after processing */
-    pointer-events: auto; /* Still allow hover */
-    border-color: #d1d5db; /* gray-300 */
-}
-.dark .tree-node.visited {
-    opacity: 0.5;
-    border-color: #4b5563; /* gray-600 */
-}
+.dark .tree-node.visiting { border-color: #fcd34d; /* amber-300 */ }
 
-/* == BST Insertion Highlighting States == */
-.tree-node.comparing { /* Node being compared during BST insertion */
-    opacity: 1; pointer-events: auto; /* Ensure visible */
-    border-color: #facc15; /* yellow-400 */
-    /* Use a different background or just border */
-    background-color: #fef9c3; /* yellow-100 */
-    transform: translateX(-50%) scale(1.1);
+.tree-node.processing { /* Used in Traversal */
+    opacity: 1; pointer-events: auto; background-color: #60a5fa; /* blue-400 */ border-color: #3b82f6; /* blue-500 */ color: white;
+    transform: scale(1.2); /* Scale from top-left */
 }
-.dark .tree-node.comparing {
-    border-color: #fde047; /* yellow-300 */
-    background-color: #422006; /* dark yellow/brown */
+.dark .tree-node.processing { background-color: #3b82f6; /* blue-500 */ border-color: #2563eb; /* blue-600 */ }
+
+.tree-node.visited { /* Node fully processed in Traversal */
+    opacity: 0.6; pointer-events: auto; border-color: #d1d5db; /* gray-300 */
+    /* transform: scale(1.0); */ /* Reset scale */
 }
-.tree-node.node-path { /* Node on the search path during BST insertion */
-    opacity: 1; pointer-events: auto; /* Ensure visible */
-    border-color: #a855f7; /* purple-500 */
-    background-color: #f3e8ff; /* purple-100 */
+.dark .tree-node.visited { opacity: 0.5; border-color: #4b5563; /* gray-600 */ }
+
+/* == BST/AVL Insertion Highlighting States == */
+.tree-node.comparing { /* Node being compared */
+    opacity: 1; pointer-events: auto; border-color: #facc15; /* yellow-400 */ background-color: #fef9c3; /* yellow-100 */
+    transform: scale(1.1); /* Scale from top-left */
 }
-.dark .tree-node.node-path {
-    border-color: #c084fc; /* purple-400 */
-    background-color: #581c87; /* purple-900 */
+.dark .tree-node.comparing { border-color: #fde047; /* yellow-300 */ background-color: #422006; }
+
+.tree-node.node-path { /* Node on the search path */
+    opacity: 1; pointer-events: auto; border-color: #a855f7; /* purple-500 */ background-color: #f3e8ff; /* purple-100 */
 }
-.tree-node.inserting { /* Node just inserted in BST */
-    opacity: 1; pointer-events: auto; /* Ensure visible */
-    background-color: #4ade80; /* green-400 */
-    border-color: #22c55e; /* green-500 */
-    color: white;
-    transform: translateX(-50%) scale(1.2);
+.dark .tree-node.node-path { border-color: #c084fc; /* purple-400 */ background-color: #581c87; /* purple-900 */ }
+
+.tree-node.inserting { /* Node just inserted */
+    opacity: 1; pointer-events: auto; background-color: #4ade80; /* green-400 */ border-color: #22c55e; /* green-500 */ color: white;
+    transform: scale(1.2); /* Scale from top-left */
 }
-.dark .tree-node.inserting {
-     background-color: #22c55e; /* green-500 */
-     border-color: #16a34a; /* green-600 */
+.dark .tree-node.inserting { background-color: #22c55e; /* green-500 */ border-color: #16a34a; /* green-600 */ }
+
+/* == AVL Tree Specific Styles == */
+.tree-node.imbalanced {
+    opacity: 1; pointer-events: auto; border-color: #f87171; /* red-400 */ background-color: #fee2e2; /* red-100 */
+    transform: scale(1.15); /* Scale from top-left */
 }
+.dark .tree-node.imbalanced { border-color: #ef4444; /* red-500 */ background-color: #7f1d1d; /* red-900 */ }
+
+.tree-node.rotating {
+    opacity: 1; pointer-events: auto; border-color: #fb923c; /* orange-400 */ box-shadow: 0 0 10px 2px #fb923c; /* Add glow */
+    transform: scale(1.1); /* Scale from top-left */
+}
+.dark .tree-node.rotating { border-color: #fdba74; /* orange-300 */ box-shadow: 0 0 10px 2px #fdba74;}
 
 
 /* Traversal result container */
 .traversal-result-container {
-    margin-top: 0;
-    padding: 8px;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    background-color: #f9fafb;
-    min-height: 30px;
-    font-size: 0.875rem;
-    text-align: center;
-    color: #374151;
-    width: 95%;
+    margin-top: 0; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px;
+    background-color: #f9fafb; min-height: 30px; font-size: 0.875rem;
+    text-align: center; color: #374151; width: 95%;
 }
-.dark .traversal-result-container {
-    border-color: #4b5563;
-    background-color: #374151;
-    color: #d1d5db;
-}
-.traversal-result-container span {
-    margin: 0 4px;
-    font-weight: 500;
-}
+.dark .traversal-result-container { border-color: #4b5563; background-color: #374151; color: #d1d5db; }
+.traversal-result-container span { margin: 0 4px; font-weight: 500; }
 
 
 /* === General UI === */
-/* Ensure code block respects dark mode */
 .dark pre { background-color: #1f2937; color: #d1d5db; }
-/* Basic syntax highlighting imitation */
 .code-keyword { color: #ec4899; } .dark .code-keyword { color: #f9a8d4; }
 .code-function { color: #8b5cf6; } .dark .code-function { color: #c4b5fd; }
 .code-comment { color: #6b7280; } .dark .code-comment { color: #9ca3af; }
 .code-number { color: #f59e0b; } .dark .code-number { color: #fcd34d; }
 .code-string { color: #10b981; } .dark .code-string { color: #6ee7b7; }
 
-/* Style details/summary for accordion */
 details > summary { list-style: none; cursor: pointer; padding: 4px 0; }
 details > summary::-webkit-details-marker { display: none; }
 details > summary::before { content: '+'; display: inline-block; width: 1em; margin-right: 0.5em; font-weight: bold; transition: transform 0.2s ease-in-out; }
 details[open] > summary::before { transform: rotate(45deg); }
 
-/* Style for active tab button */
-.tab-btn.active {
-    /* Styles applied by JS using Tailwind classes in switchTab function */
-}
+.tab-btn.active { /* Styling handled by JS */ }
