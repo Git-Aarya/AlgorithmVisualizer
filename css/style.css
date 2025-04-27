@@ -427,6 +427,613 @@ body {
     background-color: #4b5563; /* gray-600 */
 }
 
+/* === Graph Visualization Specific Styles === */
+
+#graph-svg-container {
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    display: block; /* Ensure SVG takes block space */
+    margin: 0 auto; /* Center if needed */
+    max-width: 100%; /* Ensure responsiveness */
+}
+.dark #graph-svg-container {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+}
+
+/* Default Edge Style */
+.graph-edge {
+    stroke: #9ca3af; /* gray-400 */
+    stroke-width: 1.5;
+    transition: stroke 0.3s ease-in-out, stroke-width 0.3s ease-in-out;
+}
+.dark .graph-edge {
+    stroke: #6b7280; /* gray-500 */
+}
+
+/* Active/Checking Edge Style */
+.graph-edge.active {
+    stroke: #fbbf24; /* amber-400 */
+    stroke-width: 3;
+}
+.dark .graph-edge.active {
+    stroke: #fcd34d; /* amber-300 */
+}
+
+/* Default Node Style */
+.graph-node {
+    fill: #fff; /* white */
+    stroke: #6b7280; /* gray-500 */
+    stroke-width: 2;
+    transition: fill 0.3s ease-in-out, stroke 0.3s ease-in-out, transform 0.2s ease-in-out;
+    cursor: default; /* Indicate non-interactive */
+}
+.dark .graph-node {
+    fill: #4b5563; /* gray-600 */
+    stroke: #d1d5db; /* gray-300 */
+}
+
+/* Node Label Style */
+.graph-node-label {
+    font-size: 11px;
+    font-weight: 500;
+    fill: #1f2937; /* gray-800 */
+    pointer-events: none; /* Labels don't block clicks on circle */
+    user-select: none; /* Prevent text selection */
+}
+.dark .graph-node-label {
+    fill: #f3f4f6; /* gray-100 */
+}
+
+/* --- Node States --- */
+.graph-node.initial {
+    /* Default style applies */
+    opacity: 0.8; /* Slightly dimmed initially */
+}
+.dark .graph-node.initial {
+     opacity: 0.7;
+}
+
+
+.graph-node.queued {
+    fill: #bfdbfe; /* blue-200 */
+    stroke: #3b82f6; /* blue-500 */
+}
+.dark .graph-node.queued {
+    fill: #374151; /* gray-700 */
+    stroke: #60a5fa; /* blue-400 */
+}
+
+.graph-node.processing {
+    fill: #fcd34d; /* amber-300 */
+    stroke: #f59e0b; /* amber-500 */
+    transform: scale(1.1); /* Slightly larger when processing */
+}
+.dark .graph-node.processing {
+    fill: #451a03; /* amber-900 */
+    stroke: #fcd34d; /* amber-300 */
+}
+
+.graph-node.visited {
+    fill: #d1d5db; /* gray-300 */
+    stroke: #9ca3af; /* gray-400 */
+    opacity: 0.7;
+}
+.dark .graph-node.visited {
+    fill: #374151; /* gray-700 */
+    stroke: #6b7280; /* gray-500 */
+     opacity: 0.6;
+}
+
+/* --- Queue/Result Display --- */
+.graph-queue-container, .graph-result-container {
+    padding: 8px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    min-height: 40px; /* Ensure some height */
+    font-size: 0.875rem; /* 14px */
+    color: #374151; /* gray-700 */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    flex: 1; /* Allow containers to share space */
+}
+.dark .graph-queue-container, .dark .graph-result-container {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+    color: #d1d5db; /* gray-300 */
+}
+
+.graph-queue-container span:first-child, .graph-result-container span:first-child {
+    font-weight: 600; /* Bold label */
+}
+
+.queue-item, .result-item {
+    display: inline-flex; /* Use inline-flex for alignment */
+    align-items: center;
+    justify-content: center;
+    min-width: 24px; /* Minimum width */
+    height: 24px;
+    padding: 0 6px;
+    background-color: #e5e7eb; /* gray-200 */
+    border: 1px solid #d1d5db; /* gray-300 */
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.8rem; /* Slightly smaller */
+}
+.dark .queue-item, .dark .result-item {
+    background-color: #4b5563; /* gray-600 */
+    border-color: #6b7280; /* gray-500 */
+}
+
+
+/* === Graph Visualization Specific Styles (Additions/Modifications for DFS) === */
+
+/* Reusing .graph-node.processing for the active 'visiting' state in DFS */
+
+/* Style for edges during backtracking */
+.graph-edge.backtrack {
+    stroke: #a855f7; /* purple-500 */
+    stroke-width: 2.5;
+    stroke-dasharray: 4 2; /* Dashed line for backtrack */
+    opacity: 0.8;
+}
+.dark .graph-edge.backtrack {
+    stroke: #c084fc; /* purple-400 */
+}
+
+/* Ensure other graph styles from BFS are present */
+#graph-svg-container {
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+}
+.dark #graph-svg-container {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+}
+.graph-edge {
+    stroke: #9ca3af; /* gray-400 */
+    stroke-width: 1.5;
+    transition: stroke 0.3s ease-in-out, stroke-width 0.3s ease-in-out, stroke-dasharray 0.3s ease-in-out;
+}
+.dark .graph-edge {
+    stroke: #6b7280; /* gray-500 */
+}
+.graph-edge.active {
+    stroke: #fbbf24; /* amber-400 */
+    stroke-width: 3;
+}
+.dark .graph-edge.active {
+    stroke: #fcd34d; /* amber-300 */
+}
+.graph-node {
+    fill: #fff; /* white */
+    stroke: #6b7280; /* gray-500 */
+    stroke-width: 2;
+    transition: fill 0.3s ease-in-out, stroke 0.3s ease-in-out, transform 0.2s ease-in-out;
+    cursor: default;
+}
+.dark .graph-node {
+    fill: #4b5563; /* gray-600 */
+    stroke: #d1d5db; /* gray-300 */
+}
+.graph-node-label {
+    font-size: 11px;
+    font-weight: 500;
+    fill: #1f2937; /* gray-800 */
+    pointer-events: none;
+    user-select: none;
+}
+.dark .graph-node-label {
+    fill: #f3f4f6; /* gray-100 */
+}
+.graph-node.initial {
+    opacity: 0.8;
+}
+.dark .graph-node.initial {
+     opacity: 0.7;
+}
+/* Using processing style for active DFS visit */
+.graph-node.processing {
+    fill: #fcd34d; /* amber-300 */
+    stroke: #f59e0b; /* amber-500 */
+    transform: scale(1.1);
+}
+.dark .graph-node.processing {
+    fill: #451a03; /* amber-900 */
+    stroke: #fcd34d; /* amber-300 */
+}
+.graph-node.visited {
+    fill: #d1d5db; /* gray-300 */
+    stroke: #9ca3af; /* gray-400 */
+    opacity: 0.7;
+}
+.dark .graph-node.visited {
+    fill: #374151; /* gray-700 */
+    stroke: #6b7280; /* gray-500 */
+     opacity: 0.6;
+}
+
+/* Result Display (Reused from BFS) */
+.graph-result-container {
+    padding: 8px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    min-height: 40px;
+    font-size: 0.875rem; /* 14px */
+    color: #374151; /* gray-700 */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+}
+.dark .graph-result-container {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+    color: #d1d5db; /* gray-300 */
+}
+.graph-result-container span:first-child {
+    font-weight: 600;
+}
+.result-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    background-color: #e5e7eb; /* gray-200 */
+    border: 1px solid #d1d5db; /* gray-300 */
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.8rem;
+}
+.dark .result-item {
+    background-color: #4b5563; /* gray-600 */
+    border-color: #6b7280; /* gray-500 */
+}
+
+
+/* === Dijkstra Specific Styles === */
+
+/* Edge Weight Label */
+.graph-edge-weight {
+    font-size: 10px;
+    fill: #4b5563; /* gray-600 */
+    font-weight: 500;
+    pointer-events: none;
+    user-select: none;
+}
+.dark .graph-edge-weight {
+    fill: #d1d5db; /* gray-300 */
+}
+
+/* Node Distance Label */
+.graph-node-distance {
+    font-size: 10px;
+    fill: #1d4ed8; /* blue-700 */
+    font-weight: 600;
+    pointer-events: none;
+    user-select: none;
+}
+.dark .graph-node-distance {
+    fill: #93c5fd; /* blue-300 */
+}
+
+/* Edge being actively checked/relaxed */
+.graph-edge.checking { /* Renamed from 'active' for clarity */
+    stroke: #f59e0b; /* amber-500 */
+    stroke-width: 3;
+}
+.dark .graph-edge.checking {
+    stroke: #fcd34d; /* amber-300 */
+}
+
+/* Edge that is part of the final shortest path tree */
+.graph-edge.path {
+    stroke: #16a34a; /* green-600 */
+    stroke-width: 3;
+}
+.dark .graph-edge.path {
+    stroke: #4ade80; /* green-400 */
+}
+
+/* Node being processed (extracted from PQ or distance updated) */
+.graph-node.processing { /* Reusing style */
+    fill: #fcd34d; /* amber-300 */
+    stroke: #f59e0b; /* amber-500 */
+    transform: scale(1.1);
+}
+.dark .graph-node.processing {
+    fill: #78350f; /* amber-900 */
+    stroke: #fcd34d; /* amber-300 */
+}
+
+/* Node whose shortest path is finalized */
+.graph-node.visited { /* Reusing style */
+    fill: #d1d5db; /* gray-300 */
+    stroke: #9ca3af; /* gray-400 */
+    opacity: 0.8;
+}
+.dark .graph-node.visited {
+    fill: #374151; /* gray-700 */
+    stroke: #6b7280; /* gray-500 */
+     opacity: 0.7;
+}
+
+/* --- Priority Queue & Distance Table Display --- */
+.dijkstra-pq-container, .dijkstra-dist-table {
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    min-height: 40px;
+    font-size: 0.875rem; /* 14px */
+    color: #374151; /* gray-700 */
+    flex: 1; /* Allow containers to share space */
+    overflow-x: auto; /* Allow horizontal scroll if content overflows */
+}
+.dark .dijkstra-pq-container, .dark .dijkstra-dist-table {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+    color: #d1d5db; /* gray-300 */
+}
+
+.dijkstra-pq-container span:first-child, .dijkstra-dist-table span:first-child {
+    font-weight: 600; /* Bold label */
+    display: block; /* Label on its own line */
+    margin-bottom: 4px;
+}
+
+.pq-item {
+    display: inline-block; /* Items flow inline */
+    margin-right: 8px;
+    margin-bottom: 4px; /* Spacing for wrapped items */
+    padding: 2px 6px;
+    background-color: #e0e7ff; /* indigo-100 */
+    border: 1px solid #c7d2fe; /* indigo-200 */
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    white-space: nowrap; /* Prevent wrapping within an item */
+}
+.dark .pq-item {
+    background-color: #3730a3; /* indigo-800 */
+    border-color: #4338ca; /* indigo-700 */
+}
+
+.dist-table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Responsive grid */
+    gap: 4px 8px; /* Row and column gap */
+}
+
+.dist-table-cell {
+    font-size: 0.8rem;
+    padding: 2px 4px;
+    background-color: #e5e7eb; /* gray-200 */
+    border-radius: 3px;
+    text-align: center;
+}
+.dark .dist-table-cell {
+    background-color: #4b5563; /* gray-600 */
+}
+.dist-table-cell b {
+    font-weight: 600;
+}
+
+/* Ensure other base graph styles are present */
+#graph-svg-container { /* ... keep existing styles ... */ }
+.graph-edge { /* ... keep existing styles ... */ }
+.dark .graph-edge { /* ... keep existing styles ... */ }
+.graph-node { /* ... keep existing styles ... */ }
+.dark .graph-node { /* ... keep existing styles ... */ }
+.graph-node-label { /* ... keep existing styles ... */ }
+.dark .graph-node-label { /* ... keep existing styles ... */ }
+.graph-node.initial { opacity: 1; } /* Dijkstra nodes start fully visible */
+.dark .graph-node.initial { opacity: 1; }
+
+
+/* === Bellman-Ford Specific Styles === */
+
+/* Directed Edge Arrowhead */
+.graph-arrowhead {
+    fill: #9ca3af; /* Default arrow color matches edge */
+    transition: fill 0.3s ease-in-out;
+}
+.dark .graph-arrowhead {
+    fill: #6b7280;
+}
+
+/* Style arrowhead based on edge state */
+.graph-edge.checking + polygon, /* Select polygon following a checking line */
+line.checking ~ polygon { /* Select polygon sibling after checking line (less reliable) */
+    fill: #f59e0b; /* amber-500 */
+}
+.dark .graph-edge.checking + polygon,
+.dark line.checking ~ polygon {
+    fill: #fcd34d; /* amber-300 */
+}
+
+.graph-edge.relaxed + polygon,
+line.relaxed ~ polygon {
+     fill: #a855f7; /* purple-500 */
+}
+.dark .graph-edge.relaxed + polygon,
+.dark line.relaxed ~ polygon {
+     fill: #c084fc; /* purple-400 */
+}
+
+.graph-edge.path + polygon,
+line.path ~ polygon {
+    fill: #16a34a; /* green-600 */
+}
+.dark .graph-edge.path + polygon,
+.dark line.path ~ polygon {
+    fill: #4ade80; /* green-400 */
+}
+
+.graph-edge.negative-cycle + polygon,
+line.negative-cycle ~ polygon {
+    fill: #ef4444; /* red-500 */
+}
+.dark .graph-edge.negative-cycle + polygon,
+.dark line.negative-cycle ~ polygon {
+    fill: #f87171; /* red-400 */
+}
+
+
+/* Edge being checked */
+.graph-edge.checking {
+    stroke: #f59e0b; /* amber-500 */
+    stroke-width: 2.5; /* Thicker than default */
+}
+.dark .graph-edge.checking {
+    stroke: #fcd34d; /* amber-300 */
+}
+
+/* Edge that caused relaxation in the current step */
+.graph-edge.relaxed {
+    stroke: #a855f7; /* purple-500 */
+    stroke-width: 2.5;
+}
+.dark .graph-edge.relaxed {
+    stroke: #c084fc; /* purple-400 */
+}
+
+/* Edge involved in a detected negative cycle */
+.graph-edge.negative-cycle {
+    stroke: #ef4444; /* red-500 */
+    stroke-width: 3;
+    stroke-dasharray: 5 3;
+}
+.dark .graph-edge.negative-cycle {
+    stroke: #f87171; /* red-400 */
+}
+
+/* Edge part of final shortest path (if no neg cycle) */
+.graph-edge.path { /* Reusing Dijkstra style */
+    stroke: #16a34a; /* green-600 */
+    stroke-width: 3;
+}
+.dark .graph-edge.path {
+    stroke: #4ade80; /* green-400 */
+}
+
+
+/* Node whose distance was just updated */
+.graph-node.updated {
+    fill: #e0e7ff; /* indigo-100 */
+    stroke: #6366f1; /* indigo-500 */
+    transform: scale(1.1);
+}
+.dark .graph-node.updated {
+    fill: #3730a3; /* indigo-800 */
+    stroke: #818cf8; /* indigo-400 */
+}
+
+/* Node in the final state (distance finalized) */
+.graph-node.final { /* Using visited style */
+    fill: #d1d5db; /* gray-300 */
+    stroke: #9ca3af; /* gray-400 */
+    opacity: 0.9;
+}
+.dark .graph-node.final {
+    fill: #374151; /* gray-700 */
+    stroke: #6b7280; /* gray-500 */
+     opacity: 0.8;
+}
+
+/* Node involved in a detected negative cycle */
+.graph-node.negative-cycle {
+    fill: #fee2e2; /* red-100 */
+    stroke: #ef4444; /* red-500 */
+    transform: scale(1.15);
+}
+.dark .graph-node.negative-cycle {
+    fill: #7f1d1d; /* red-900 */
+    stroke: #f87171; /* red-400 */
+}
+
+/* Negative Weight Styling */
+.graph-edge-weight.negative-weight {
+    fill: #dc2626; /* red-600 */
+    font-weight: 700;
+}
+.dark .graph-edge-weight.negative-weight {
+    fill: #f87171; /* red-400 */
+}
+
+/* --- Iteration & Distance Table Display --- */
+.bf-iteration-container, .bf-dist-table {
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    min-height: 40px;
+    font-size: 0.875rem; /* 14px */
+    color: #374151; /* gray-700 */
+    flex: 1;
+    overflow-x: auto;
+}
+.dark .bf-iteration-container, .dark .bf-dist-table {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+    color: #d1d5db; /* gray-300 */
+}
+
+.bf-iteration-container span:first-child, .bf-dist-table span:first-child {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* Reusing distance table styles from Dijkstra */
+.dist-table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 4px 8px;
+}
+.dist-table-cell {
+    font-size: 0.8rem;
+    padding: 2px 4px;
+    background-color: #e5e7eb; /* gray-200 */
+    border-radius: 3px;
+    text-align: center;
+}
+.dark .dist-table-cell {
+    background-color: #4b5563; /* gray-600 */
+}
+.dist-table-cell b {
+    font-weight: 600;
+}
+
+/* Ensure other base graph styles are present */
+#graph-svg-container { /* ... keep existing styles ... */ }
+.graph-edge.directed { /* Style for directed edges */
+    /* marker-end is set in JS */
+}
+.graph-edge-weight { /* ... keep existing styles ... */ }
+.dark .graph-edge-weight { /* ... keep existing styles ... */ }
+.graph-node { /* ... keep existing styles ... */ }
+.dark .graph-node { /* ... keep existing styles ... */ }
+.graph-node-label { /* ... keep existing styles ... */ }
+.dark .graph-node-label { /* ... keep existing styles ... */ }
+.graph-node-distance { /* ... keep existing styles ... */ }
+.dark .graph-node-distance { /* ... keep existing styles ... */ }
+.graph-node.initial { /* ... keep existing styles ... */ }
+.dark .graph-node.initial { /* ... keep existing styles ... */ }
+
+
 
 
 /* === General UI === */

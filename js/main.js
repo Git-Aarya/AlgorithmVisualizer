@@ -54,14 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
         'avl': typeof avlConfig !== 'undefined' ? avlConfig : null,
         'heap-ops': typeof heapOpsConfig !== 'undefined' ? heapOpsConfig : null,
         'tree-bfs-dfs': typeof treeBfsDfsConfig !== 'undefined' ? treeBfsDfsConfig : null,
+        'graph-bfs': typeof graphBfsConfig !== 'undefined' ? graphBfsConfig : null,
+        'graph-dfs': typeof graphDfsConfig !== 'undefined' ? graphDfsConfig : null,
+        'dijkstra': typeof dijkstraConfig !== 'undefined' ? dijkstraConfig : null,
+        'bellman-ford': typeof bellmanFordConfig !== 'undefined' ? bellmanFordConfig : null,
         // Add entries for any other *implemented* algorithms you create files for
 
         // --- Placeholder definitions for algorithms NOT yet implemented ---
         // (Keep these directly defined here until you implement them)
-        'graph-bfs': { name: 'BFS (Graphs)', code: '// TODO: Graph BFS Code', pseudocode: '// TODO: Graph BFS Pseudocode', setup: null, renderStep: null },
-        'graph-dfs': { name: 'DFS (Graphs)', code: '// TODO: Graph DFS Code', pseudocode: '// TODO: Graph DFS Pseudocode', setup: null, renderStep: null },
-        'dijkstra': { name: 'Dijkstra’s Algorithm', code: '// TODO: Dijkstra Code', pseudocode: '// TODO: Dijkstra Pseudocode', setup: null, renderStep: null },
-        'bellman-ford': { name: 'Bellman-Ford', code: '// TODO: Bellman-Ford Code', pseudocode: '// TODO: Bellman-Ford Pseudocode', setup: null, renderStep: null },
         'floyd-warshall': { name: 'Floyd-Warshall', code: '// TODO: Floyd-Warshall Code', pseudocode: '// TODO: Floyd-Warshall Pseudocode', setup: null, renderStep: null },
         'kruskal': { name: 'Kruskal’s MST', code: '// TODO: Kruskal Code', pseudocode: '// TODO: Kruskal Pseudocode', setup: null, renderStep: null },
         'prim': { name: 'Prim’s MST', code: '// TODO: Prim Code', pseudocode: '// TODO: Prim Pseudocode', setup: null, renderStep: null },
@@ -202,12 +202,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- HIDE/SHOW VISUALIZATION AREAS BASED ON TYPE ---
         const mainVisArea = document.getElementById('visualization-area');
         const extraVisArea = document.getElementById('extra-visualization-area');
-        if (currentAlgorithm.type === 'tree') {
+        // Use extra area for both 'tree' and 'graph' types
+        if (currentAlgorithm.type === 'tree' || currentAlgorithm.type === 'graph') {
             if (mainVisArea) mainVisArea.style.display = 'none'; // Hide bar area
-            if (extraVisArea) extraVisArea.style.display = 'block'; // Ensure extra area is visible
-        } else {
-            if (mainVisArea) mainVisArea.style.display = 'flex'; // Show bar area (using flex for centering)
-            if (extraVisArea) extraVisArea.style.display = 'block'; // Keep extra area visible (for count sort etc.)
+            if (extraVisArea) {
+                 extraVisArea.style.display = 'block'; // Ensure extra area is visible
+                 // Let the algorithm's setup handle clearing its content
+                 // extraVisArea.innerHTML = ''; // Avoid clearing here
+            }
+        } else { // For bar-based visualizations (default)
+            if (mainVisArea) mainVisArea.style.display = 'flex'; // Show bar area
+            if (extraVisArea) {
+                extraVisArea.style.display = 'block'; // Still potentially used (e.g., count sort)
+                extraVisArea.innerHTML = ''; // Clear for non-tree/graph types
+            }
              // Ensure bar area has default content if no bars are added yet
              if(mainVisArea && mainVisArea.innerHTML === '') {
                  mainVisArea.innerHTML = '<p class="text-gray-500 dark:text-gray-400 self-center">Visualization appears here</p>';
@@ -217,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         animationState = {
             ...animationState,
             steps: [],
-            elements: [],
+            elements: (currentAlgorithm.type === 'tree' || currentAlgorithm.type === 'graph') ? {} : [],
             countElements: [],
             outputElements: [],
             currentStep: -1,
@@ -227,13 +235,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentAlgorithm.type !== 'tree') { // Clear bar area only if not a tree
             if(mainVisArea) mainVisArea.innerHTML = '';
        }
-       if (extraVisArea) extraVisArea.innerHTML = '';
+       // if (extraVisArea) extraVisArea.innerHTML = '';
 
 
        try {
         const setupResult = currentAlgorithm.setup(currentData);
-         animationState.steps = setupResult.steps || [];
-        animationState.elements = setupResult.elements || (currentAlgorithm.type === 'tree' ? {} : []);
+
+        animationState.steps = setupResult.steps || [];
+        animationState.elements = setupResult.elements || {};
+
         animationState.countElements = setupResult.countElements || [];
         animationState.outputElements = setupResult.outputElements || [];
         animationState.targetValue = setupResult.target;
@@ -246,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
             statusMessage.textContent = animationState.steps[0]?.message || 'Ready';
         } else {
             // Handle cases where no steps are generated, respecting specific vis area
-            const areaToShowMessage = currentAlgorithm.type === 'tree' ? extraVisArea : mainVisArea;
+            const areaToShowMessage = (currentAlgorithm.type === 'tree' || currentAlgorithm.type === 'graph') ? extraVisArea : mainVisArea;
              if (areaToShowMessage && !areaToShowMessage.innerHTML.includes('visualization not implemented yet') && !areaToShowMessage.innerHTML.includes('requires non-negative integers')) {
                   areaToShowMessage.innerHTML = `<p class="text-gray-500 dark:text-gray-400 self-center">No visualization steps generated.</p>`;
              }
@@ -255,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             // ... (error handling remains the same)
              console.error(`Error during setup for ${currentAlgorithm.name}:`, error);
-             const errorArea = currentAlgorithm.type === 'tree' ? extraVisArea : mainVisArea;
+             const errorArea = (currentAlgorithm.type === 'tree' || currentAlgorithm.type === 'graph') ? extraVisArea : mainVisArea;
              if(errorArea) errorArea.innerHTML = `<p class="text-red-500 dark:text-red-400 self-center">Error during setup. Check console.</p>`;
              statusMessage.textContent = 'Error during setup';
              animationState.steps = [];
