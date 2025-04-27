@@ -50,11 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'heap-sort': typeof heapSortConfig !== 'undefined' ? heapSortConfig : null,
         'counting-sort': typeof countingSortConfig !== 'undefined' ? countingSortConfig : null,
         'tree-traversals': typeof treeTraversalsConfig !== 'undefined' ? treeTraversalsConfig : null,
+        'bst': typeof bstConfig !== 'undefined' ? bstConfig : null,
         // Add entries for any other *implemented* algorithms you create files for
 
         // --- Placeholder definitions for algorithms NOT yet implemented ---
         // (Keep these directly defined here until you implement them)
-        'bst': { name: 'Binary Search Tree Ops', code: '// TODO: BST Operations Code', pseudocode: '// TODO: BST Operations Pseudocode', setup: null, renderStep: null },
         'avl': { name: 'AVL Tree Rotations', code: '// TODO: AVL Tree Rotations Code', pseudocode: '// TODO: AVL Tree Rotations Pseudocode', setup: null, renderStep: null },
         'heap-ops': { name: 'Heap Operations (Insert/Extract)', code: '// TODO: Heap Operations Code', pseudocode: '// TODO: Heap Operations Pseudocode', setup: null, renderStep: null },
         'tree-bfs-dfs': { name: 'BFS & DFS (Trees)', code: '// TODO: Tree BFS/DFS Code', pseudocode: '// TODO: Tree BFS/DFS Pseudocode', setup: null, renderStep: null },
@@ -199,6 +199,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log(`Setting up visualization for: ${currentAlgorithm.name}`);
 
+        // --- HIDE/SHOW VISUALIZATION AREAS BASED ON TYPE ---
+        const mainVisArea = document.getElementById('visualization-area');
+        const extraVisArea = document.getElementById('extra-visualization-area');
+        if (currentAlgorithm.type === 'tree') {
+            if (mainVisArea) mainVisArea.style.display = 'none'; // Hide bar area
+            if (extraVisArea) extraVisArea.style.display = 'block'; // Ensure extra area is visible
+        } else {
+            if (mainVisArea) mainVisArea.style.display = 'flex'; // Show bar area (using flex for centering)
+            if (extraVisArea) extraVisArea.style.display = 'block'; // Keep extra area visible (for count sort etc.)
+             // Ensure bar area has default content if no bars are added yet
+             if(mainVisArea && mainVisArea.innerHTML === '') {
+                 mainVisArea.innerHTML = '<p class="text-gray-500 dark:text-gray-400 self-center">Visualization appears here</p>';
+             }
+        }
+
         animationState = {
             ...animationState,
             steps: [],
@@ -208,42 +223,46 @@ document.addEventListener('DOMContentLoaded', () => {
             currentStep: -1,
             targetValue: null,
         };
-        visualizationArea.innerHTML = '';
-        extraVisualizationArea.innerHTML = '';
+        // Clear appropriate areas
+        if (currentAlgorithm.type !== 'tree') { // Clear bar area only if not a tree
+            if(mainVisArea) mainVisArea.innerHTML = '';
+       }
+       if (extraVisArea) extraVisArea.innerHTML = '';
 
 
-        try {
-            const setupResult = currentAlgorithm.setup(currentData);
+       try {
+        const setupResult = currentAlgorithm.setup(currentData);
+         animationState.steps = setupResult.steps || [];
+        animationState.elements = setupResult.elements || (currentAlgorithm.type === 'tree' ? {} : []);
+        animationState.countElements = setupResult.countElements || [];
+        animationState.outputElements = setupResult.outputElements || [];
+        animationState.targetValue = setupResult.target;
 
-            animationState.steps = setupResult.steps || [];
-            animationState.elements = setupResult.elements || [];
-            animationState.countElements = setupResult.countElements || [];
-            animationState.outputElements = setupResult.outputElements || [];
-            animationState.targetValue = setupResult.target;
+        console.log(`Setup generated ${animationState.steps.length} steps.`);
 
-            console.log(`Setup generated ${animationState.steps.length} steps.`);
-
-            if (animationState.steps.length > 0) {
-                animationState.currentStep = 0;
-                currentAlgorithm.renderStep(animationState.steps[0], animationState.elements, animationState);
-                statusMessage.textContent = animationState.steps[0]?.message || 'Ready';
-            } else if (!visualizationArea.innerHTML.includes('visualization not implemented yet') && !visualizationArea.innerHTML.includes('requires non-negative integers')) {
-                 visualizationArea.innerHTML = `<p class="text-gray-500 dark:text-gray-400 self-center">No visualization steps generated.</p>`;
-                 extraVisualizationArea.innerHTML = '';
-                 statusMessage.textContent = 'No steps to visualize.';
-            } else {
-                 // Status already set by defaultSetup or error message shown
-            }
+        if (animationState.steps.length > 0) {
+            animationState.currentStep = 0;
+            currentAlgorithm.renderStep(animationState.steps[0], animationState.elements, animationState);
+            statusMessage.textContent = animationState.steps[0]?.message || 'Ready';
+        } else {
+            // Handle cases where no steps are generated, respecting specific vis area
+            const areaToShowMessage = currentAlgorithm.type === 'tree' ? extraVisArea : mainVisArea;
+             if (areaToShowMessage && !areaToShowMessage.innerHTML.includes('visualization not implemented yet') && !areaToShowMessage.innerHTML.includes('requires non-negative integers')) {
+                  areaToShowMessage.innerHTML = `<p class="text-gray-500 dark:text-gray-400 self-center">No visualization steps generated.</p>`;
+             }
+             statusMessage.textContent = 'No steps to visualize.';
+        }
         } catch (error) {
-            console.error(`Error during setup for ${currentAlgorithm.name}:`, error);
-            visualizationArea.innerHTML = `<p class="text-red-500 dark:text-red-400 self-center">Error during setup. Check console.</p>`;
-            extraVisualizationArea.innerHTML = '';
-            statusMessage.textContent = 'Error during setup';
-            animationState.steps = [];
-            animationState.elements = [];
-            animationState.countElements = [];
-            animationState.outputElements = [];
-            animationState.currentStep = -1;
+            // ... (error handling remains the same)
+             console.error(`Error during setup for ${currentAlgorithm.name}:`, error);
+             const errorArea = currentAlgorithm.type === 'tree' ? extraVisArea : mainVisArea;
+             if(errorArea) errorArea.innerHTML = `<p class="text-red-500 dark:text-red-400 self-center">Error during setup. Check console.</p>`;
+             statusMessage.textContent = 'Error during setup';
+             animationState.steps = [];
+             animationState.elements = currentAlgorithm.type === 'tree' ? {} : [];
+             animationState.countElements = [];
+             animationState.outputElements = [];
+             animationState.currentStep = -1;
         }
 
         updateButtonStates();

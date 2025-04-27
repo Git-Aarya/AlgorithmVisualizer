@@ -14,219 +14,27 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Custom scrollbar for sidebar (optional) */
+        /* Custom scrollbar for sidebar (optional but recommended) */
+        /* Styles moved to style.css in previous steps, can be removed from here if desired */
         .sidebar-scroll::-webkit-scrollbar { width: 6px; }
         .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background-color: rgba(156, 163, 175, 0.5); border-radius: 3px; }
         .dark .sidebar-scroll::-webkit-scrollbar-thumb { background-color: rgba(107, 114, 128, 0.5); }
 
-        /* Visualization Bar Styling */
-        .vis-bar {
-            display: inline-block;
-            background-color: #3b82f6; /* blue-500 */
-            margin: 0 1px;
-            width: 15px;
-            vertical-align: bottom;
-            transition: height 0.3s ease-in-out, background-color 0.3s ease-in-out, opacity 0.3s ease-in-out, border 0.1s ease-in-out, transform 0.3s ease-in-out;
-            border-radius: 4px 4px 0 0;
-            position: relative;
-            text-align: center;
-            color: white;
-            font-size: 10px;
-            line-height: 1;
-            border: 1px solid transparent; /* Base border */
-        }
-        .dark .vis-bar { background-color: #60a5fa; /* blue-400 */ }
-
-        /* General comparison/mid-point highlight */
-        .vis-bar.comparing {
-            background-color: #facc15; /* yellow-400 */
-            border-color: #eab308; /* yellow-500 */
-        }
-        .dark .vis-bar.comparing {
-            background-color: #fde047; /* yellow-300 */
-            border-color: #facc15; /* yellow-400 */
-        }
-        /* Swapping highlight (Sorting) */
-        .vis-bar.swapping {
-            background-color: #f87171; /* red-400 */
-            border-color: #ef4444; /* red-500 */
-        }
-        .dark .vis-bar.swapping {
-            background-color: #ef4444; /* red-500 */
-            border-color: #dc2626; /* red-600 */
-        }
-        /* Sorted element highlight (General Sorting) */
-         .vis-bar.sorted-pass { /* Used in Bubble sort pass */
-            background-color: #a3e635; /* lime-400 */
-        }
-        .dark .vis-bar.sorted-pass { background-color: #bef264; /* lime-300 */ }
-        .vis-bar.sorted-final { /* Final sorted state */
-            background-color: #4ade80; /* green-400 */
-        }
-        .dark .vis-bar.sorted-final { background-color: #86efac; /* green-300 */ }
-
-        /* Found element highlight (Searching) */
-        .vis-bar.found {
-            background-color: #fb923c; /* orange-400 */
-            border: 2px solid #f97316; /* orange-500 */
-        }
-        .dark .vis-bar.found {
-            background-color: #fdba74; /* orange-300 */
-             border: 2px solid #ea580c; /* orange-600 */
-        }
-         /* Dimmed/Checked/Out-of-range element */
-        .vis-bar.checked, .vis-bar.out-of-range, .vis-bar.outside-partition, .vis-bar.outside-heap-range, .vis-bar.outside-merge-range { opacity: 0.4; }
-        /* Highlight for the current search/partition range */
-        .vis-bar.in-range, .vis-bar.partition-range, .vis-bar.heap-range, .vis-bar.merge-range { /* No specific style, relies on dimming */ }
-
-        /* == Selection Sort Specific Styles == */
-        .vis-bar.current-outer { border-bottom: 3px solid #a855f7; } /* purple-500 */
-        .dark .vis-bar.current-outer { border-bottom-color: #c084fc; } /* purple-400 */
-        .vis-bar.minimum { background-color: #ec4899; border-color: #db2777; } /* pink-500/600 */
-        .dark .vis-bar.minimum { background-color: #f9a8d4; border-color: #ec4899; } /* pink-300/500 */
-
-        /* == Insertion Sort Specific Styles == */
-        .vis-bar.current-insertion { border: 2px solid #f43f5e; transform: translateY(-10px); } /* rose-500 */
-        .dark .vis-bar.current-insertion { border-color: #fb7185; } /* rose-400 */
-        .vis-bar.shifting { opacity: 0.7; background-color: #6366f1; } /* indigo-500 */
-         .dark .vis-bar.shifting { background-color: #818cf8; } /* indigo-400 */
-
-        /* == Quick Sort Specific Styles == */
-        .vis-bar.pivot { border: 2px dashed #f43f5e; } /* rose-500 dashed border */
-        .dark .vis-bar.pivot { border-color: #fb7185; } /* rose-400 */
-        .vis-bar.partition-i::before { content: 'i'; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: bold; color: #a855f7; } /* purple-500 */
-         .dark .vis-bar.partition-i::before { color: #c084fc; } /* purple-400 */
-        .vis-bar.partition-j::after { content: 'j'; position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: bold; color: #22c55e; } /* green-500 */
-        .dark .vis-bar.partition-j::after { color: #4ade80; } /* green-400 */
-        .vis-bar.sorted-partition { background-color: #22d3ee; } /* cyan-400 */
-        .dark .vis-bar.sorted-partition { background-color: #67e8f9; } /* cyan-300 */
-
-        /* == Merge Sort Specific Styles == */
-        .vis-bar.placing-merge { background-color: #6366f1; border-color: #4f46e5; } /* indigo-500/600 */
-         .dark .vis-bar.placing-merge { background-color: #818cf8; border-color: #6366f1; } /* indigo-400/500 */
-
-        /* == Heap Sort Specific Styles == */
-        .vis-bar.heapify-node { border: 2px solid #fbbf24; /* amber-400 */ }
-        .dark .vis-bar.heapify-node { border-color: #fcd34d; /* amber-300 */ }
-        .vis-bar.heapify-largest { background-color: #f87171; /* red-400 */ }
-        .dark .vis-bar.heapify-largest { background-color: #ef4444; /* red-500 */ }
-
-        /* == Counting Sort Specific Styles == */
-        .vis-bar.reading { background-color: #fb923c; } /* orange-400 */
-        .dark .vis-bar.reading { background-color: #fdba74; } /* orange-300 */
-        .vis-bar.writing { background-color: #a3e635; } /* lime-400 */
-        .dark .vis-bar.writing { background-color: #bef264; } /* lime-300 */
-
-        .count-array-vis, .output-array-vis {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 10px;
-            padding: 8px;
-            border: 1px solid #e5e7eb; /* gray-200 */
-            border-radius: 6px;
-            background-color: #f9fafb; /* gray-50 */
-            min-height: 40px;
-            align-items: center;
-            position: relative; /* For label */
-            padding-top: 14px; /* Space for label */
-            margin-bottom: 20px; /* Space for indices */
-        }
-        .dark .count-array-vis, .dark .output-array-vis {
-            border-color: #4b5563; /* gray-600 */
-            background-color: #374151; /* gray-700 */
-        }
-        .count-array-vis::before, .output-array-vis::before {
-            content: attr(data-label);
-            position: absolute;
-            top: -10px;
-            left: 5px;
-            font-size: 0.75rem; /* 12px */
-            font-weight: 500;
-            color: #6b7280; /* gray-500 */
-            background-color: #f9fafb; /* gray-50 */
-            padding: 0 4px;
-        }
-        .dark .count-array-vis::before, .dark .output-array-vis::before {
-            color: #d1d5db; /* gray-300 */
-            background-color: #374151; /* gray-700 */
-        }
-
-        .count-cell, .output-cell {
-            min-width: 25px;
-            height: 25px;
-            border: 1px solid #d1d5db; /* gray-300 */
-            border-radius: 4px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 11px;
-            background-color: #fff; /* white */
-            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-            position: relative; /* For index label */
-            color: #1f2937; /* gray-800 */
-        }
-        .dark .count-cell, .dark .output-cell {
-            border-color: #6b7280; /* gray-500 */
-            background-color: #4b5563; /* gray-600 */
-            color: #f3f4f6; /* gray-100 */
-        }
-        .count-cell::after, .output-cell::after {
-            content: attr(data-index);
-            position: absolute;
-            bottom: -14px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 9px;
-            color: #9ca3af; /* gray-400 */
-        }
-        .dark .count-cell::after, .dark .output-cell::after {
-            color: #6b7280; /* gray-500 */
-        }
-
-        .count-cell.highlight-read, .output-cell.highlight-read {
-            border-color: #fb923c; /* orange-400 */
-            transform: scale(1.1);
-        }
-        .count-cell.highlight-write, .output-cell.highlight-write {
-            background-color: #a3e635; /* lime-400 */
-            border-color: #84cc16; /* lime-500 */
-            transform: scale(1.1);
-        }
-        .dark .count-cell.highlight-write, .dark .output-cell.highlight-write {
-             background-color: #bef264; /* lime-300 */
-             border-color: #a3e635; /* lime-400 */
-        }
-        .output-cell.empty {
-            background-color: #e5e7eb; /* gray-200 */
-            color: #9ca3af; /* gray-400 */
-        }
-        .dark .output-cell.empty {
-            background-color: #4b5563; /* gray-600 */
-            color: #6b7280; /* gray-500 */
-        }
-
-
-        /* Ensure code block respects dark mode */
+        /* Ensure code block respects dark mode (can also move to style.css) */
         .dark pre { background-color: #1f2937; color: #d1d5db; } /* gray-800 text-gray-300 */
-        /* Basic syntax highlighting imitation */
+        /* Basic syntax highlighting imitation (can also move to style.css) */
         .code-keyword { color: #ec4899; } .dark .code-keyword { color: #f9a8d4; } /* pink-500/300 */
         .code-function { color: #8b5cf6; } .dark .code-function { color: #c4b5fd; } /* violet-500/300 */
         .code-comment { color: #6b7280; } .dark .code-comment { color: #9ca3af; } /* gray-500/400 */
         .code-number { color: #f59e0b; } .dark .code-number { color: #fcd34d; } /* amber-500/300 */
         .code-string { color: #10b981; } .dark .code-string { color: #6ee7b7; } /* emerald-500/300 */
 
-        /* Style details/summary for accordion */
+        /* Style details/summary for accordion (can also move to style.css) */
         details > summary { list-style: none; cursor: pointer; padding: 4px 0; }
-        details > summary::-webkit-details-marker { display: none; } /* Hide default arrow in Chrome/Safari */
+        details > summary::-webkit-details-marker { display: none; } /* Hide default arrow */
         details > summary::before { content: '+'; display: inline-block; width: 1em; margin-right: 0.5em; font-weight: bold; transition: transform 0.2s ease-in-out; }
         details[open] > summary::before { transform: rotate(45deg); }
-
-        /* --- REMOVED INCORRECT TAB STYLES --- */
-        /* Tab button styling is now handled by adding/removing
-           Tailwind classes in the switchTab JavaScript function */
-
     </style>
     <script>
         // Configure Tailwind CSS
@@ -276,7 +84,13 @@
                         <li><a href="#" data-algo="counting-sort" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Counting Sort</a></li>
                     </ul>
                 </details>
-                 <details class="group"> <summary class="font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Tree Algorithms</summary> <ul class="mt-1 pl-4 space-y-1"><li><a href="#" data-algo="tree-traversals" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Tree Traversals</a></li><li><a href="#" data-algo="bst" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Binary Search Tree</a></li><li><a href="#" data-algo="avl" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">AVL Tree Rotations</a></li><li><a href="#" data-algo="heap-ops" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Heap Operations</a></li><li><a href="#" data-algo="tree-bfs-dfs" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">BFS & DFS (Trees)</a></li></ul></details>
+                 <details class="group"> <summary class="font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Tree Algorithms</summary> <ul class="mt-1 pl-4 space-y-1">
+                     <li><a href="#" data-algo="tree-traversals" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Tree Traversals</a></li>
+                     <li><a href="#" data-algo="bst" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Binary Search Tree</a></li>
+                     <li><a href="#" data-algo="avl" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">AVL Tree Rotations</a></li>
+                     <li><a href="#" data-algo="heap-ops" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Heap Operations</a></li>
+                     <li><a href="#" data-algo="tree-bfs-dfs" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">BFS & DFS (Trees)</a></li>
+                 </ul></details>
                  <details class="group"> <summary class="font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Graph Algorithms</summary> <ul class="mt-1 pl-4 space-y-1"><li><a href="#" data-algo="graph-bfs" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">BFS (Graphs)</a></li><li><a href="#" data-algo="graph-dfs" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">DFS (Graphs)</a></li><li><a href="#" data-algo="dijkstra" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Dijkstra’s Algorithm</a></li><li><a href="#" data-algo="bellman-ford" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Bellman-Ford</a></li><li><a href="#" data-algo="floyd-warshall" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Floyd-Warshall</a></li><li><a href="#" data-algo="kruskal" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Kruskal’s MST</a></li><li><a href="#" data-algo="prim" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Prim’s MST</a></li><li><a href="#" data-algo="topo-sort" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Topological Sorting</a></li></ul></details>
                  <details class="group"> <summary class="font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Dynamic Programming</summary> <ul class="mt-1 pl-4 space-y-1"><li><a href="#" data-algo="fibonacci" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Fibonacci</a></li><li><a href="#" data-algo="lcs" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Longest Common Subsequence</a></li><li><a href="#" data-algo="knapsack" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">0/1 Knapsack</a></li><li><a href="#" data-algo="coin-change" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Coin Change</a></li><li><a href="#" data-algo="mcm" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Matrix Chain Multiplication</a></li></ul></details>
                  <details class="group"> <summary class="font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">Backtracking</summary> <ul class="mt-1 pl-4 space-y-1"><li><a href="#" data-algo="n-queens" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">N-Queens</a></li><li><a href="#" data-algo="sudoku" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Sudoku Solver</a></li><li><a href="#" data-algo="rat-maze" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Rat in a Maze</a></li><li><a href="#" data-algo="word-search" class="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded px-2 py-1">Word Search</a></li></ul></details>
@@ -287,11 +101,11 @@
         <main class="flex-1 p-4 md:p-6 lg:p-8 flex flex-col">
             <h2 id="current-algo-title" class="text-2xl font-semibold mb-4 text-center text-gray-800 dark:text-gray-200">Select an Algorithm</h2>
 
-            <div id="visualization-area" class="h-48 md:h-56 lg:h-64 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg mb-4 flex justify-center items-end p-4 overflow-hidden transition-colors duration-300 relative">
+            <div id="visualization-area" class="h-48 md:h-56 lg:h-64 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg mb-4 flex justify-center items-end p-4 overflow-hidden transition-colors duration-300 relative" style="display: flex;">
                  <p class="text-gray-500 dark:text-gray-400 self-center">Visualization appears here</p>
             </div>
 
-            <div id="extra-visualization-area" class="space-y-3 mb-4">
+            <div id="extra-visualization-area" class="space-y-3 mb-4" style="display: block;">
                 </div>
 
             <div id="status-message" class="text-center mb-4 h-6 text-sm text-gray-600 dark:text-gray-400"></div>
@@ -339,6 +153,7 @@
     <script src="js/algorithms/heap-sort.js"></script>
     <script src="js/algorithms/counting-sort.js"></script>
     <script src="js/algorithms/tree-traversals.js"></script>
+    <script src="js/algorithms/bst.js"></script>
     <script src="js/main.js"></script>
 
 </body>

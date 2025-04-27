@@ -9,7 +9,7 @@ body {
 .sidebar-scroll::-webkit-scrollbar-thumb { background-color: rgba(156, 163, 175, 0.5); border-radius: 3px; }
 .dark .sidebar-scroll::-webkit-scrollbar-thumb { background-color: rgba(107, 114, 128, 0.5); }
 
-/* Visualization Bar Styling */
+/* === Visualization Bar Styling === */
 .vis-bar {
     display: inline-block;
     background-color: #3b82f6; /* blue-500 */
@@ -101,7 +101,7 @@ body {
 .vis-bar.heapify-largest { background-color: #f87171; /* red-400 */ }
 .dark .vis-bar.heapify-largest { background-color: #ef4444; /* red-500 */ }
 
-/* == Counting Sort Specific Styles == */
+/* === Counting Sort Specific Styles === */
 .vis-bar.reading { background-color: #fb923c; } /* orange-400 */
 .dark .vis-bar.reading { background-color: #fdba74; } /* orange-300 */
 .vis-bar.writing { background-color: #a3e635; } /* lime-400 */
@@ -196,71 +196,86 @@ body {
     color: #6b7280; /* gray-500 */
 }
 
-/* Ensure code block respects dark mode */
-.dark pre { background-color: #1f2937; color: #d1d5db; } /* gray-800 text-gray-300 */
-/* Basic syntax highlighting imitation */
-.code-keyword { color: #ec4899; } .dark .code-keyword { color: #f9a8d4; } /* pink-500/300 */
-.code-function { color: #8b5cf6; } .dark .code-function { color: #c4b5fd; } /* violet-500/300 */
-.code-comment { color: #6b7280; } .dark .code-comment { color: #9ca3af; } /* gray-500/400 */
-.code-number { color: #f59e0b; } .dark .code-number { color: #fcd34d; } /* amber-500/300 */
-.code-string { color: #10b981; } .dark .code-string { color: #6ee7b7; } /* emerald-500/300 */
 
-/* Style details/summary for accordion */
-details > summary { list-style: none; cursor: pointer; padding: 4px 0; }
-details > summary::-webkit-details-marker { display: none; } /* Hide default arrow in Chrome/Safari */
-details > summary::before { content: '+'; display: inline-block; width: 1em; margin-right: 0.5em; font-weight: bold; transition: transform 0.2s ease-in-out; }
-details[open] > summary::before { transform: rotate(45deg); }
-
-/* Style for active tab button */
-.tab-btn.active {
-    /* Styles applied by JS using Tailwind classes in switchTab function */
-}
-
-
-
-/* == Tree Traversal Specific Styles == */
+/* === Tree Visualization Specific Styles === */
 .tree-visualization-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
     padding: 15px;
     border: 1px solid #e5e7eb; /* gray-200 */
     border-radius: 6px;
     background-color: #f9fafb; /* gray-50 */
-    margin-bottom: 10px; /* Space below the tree */
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 .dark .tree-visualization-container {
     border-color: #4b5563; /* gray-600 */
     background-color: #374151; /* gray-700 */
 }
 
-.tree-nodes-container {
+/* Styles for Tree Traversal Type Selector */
+.traversal-type-selector {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Allow nodes to wrap if needed */
-    gap: 15px; /* Space between nodes */
-    padding: 10px;
-    position: relative; /* For potential line drawing later */
-    min-height: 60px; /* Ensure container has some height */
+    gap: 15px;
+    margin-bottom: 10px;
+    padding: 5px;
+    font-size: 0.875rem;
+}
+.traversal-type-selector label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    color: #374151; /* gray-700 */
+}
+.dark .traversal-type-selector label {
+    color: #d1d5db; /* gray-300 */
+}
+.traversal-type-selector input[type="radio"] {
+    cursor: pointer;
+    accent-color: #3b82f6; /* blue-500 */
 }
 
+/* Tree node container */
+.tree-nodes-container {
+    display: block;
+    position: relative; /* Crucial for absolute children */
+    width: 100%;
+    min-height: 180px; /* Adjust as needed */
+    margin-bottom: 15px;
+    overflow-x: auto;   /* Allow horizontal scroll */
+    overflow-y: hidden; /* Prevent vertical scroll */
+    padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+}
+
+/* Base Tree Node Style */
 .tree-node {
     width: 35px;
     height: 35px;
-    border-radius: 50%; /* Circle shape */
+    border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: 500;
     font-size: 14px;
-    border: 2px solid #9ca3af; /* gray-400 */
-    background-color: #fff; /* white */
-    color: #1f2937; /* gray-800 */
-    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-    position: relative; /* For potential connections */
-    z-index: 1; /* Ensure nodes are above lines if added */
+    border: 2px solid #9ca3af; /* Default border: gray-400 */
+    background-color: #fff; /* Default background: white */
+    color: #1f2937; /* Default text: gray-800 */
+    position: absolute; /* For layout */
+    transform: translateX(-50%); /* Centering */
+    z-index: 1;
+    /* --- Visibility controlled by JS/opacity for BST --- */
+    opacity: 1; /* VISIBLE by default */
+    pointer-events: auto; /* INTERACTIVE by default */
+    /* --- Transitions --- */
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out, transform 0.2s ease-in-out, opacity 0.3s ease-in-out, top 0.3s ease-in-out, left 0.3s ease-in-out;
 }
 .dark .tree-node {
     border-color: #6b7280; /* gray-500 */
@@ -268,52 +283,118 @@ details[open] > summary::before { transform: rotate(45deg); }
     color: #f3f4f6; /* gray-100 */
 }
 
+/* Node visible but not actively highlighted (Default visible state) */
+/* This style might not be needed if default .tree-node is sufficient when opacity=1 */
+/* .tree-node.visible {
+    opacity: 1;
+    pointer-events: auto;
+} */
+
+/* == Tree Traversal Highlighting States == */
 .tree-node.visiting {
+    opacity: 1; pointer-events: auto; /* Ensure visible */
     border-color: #fbbf24; /* amber-400 */
-    transform: scale(1.1);
+    transform: translateX(-50%) scale(1.1);
 }
 .dark .tree-node.visiting {
     border-color: #fcd34d; /* amber-300 */
 }
-
-.tree-node.processing {
+.tree-node.processing { /* Used in Traversal */
+    opacity: 1; pointer-events: auto; /* Ensure visible */
     background-color: #60a5fa; /* blue-400 */
     border-color: #3b82f6; /* blue-500 */
     color: white;
-    transform: scale(1.2);
+    transform: translateX(-50%) scale(1.2);
 }
 .dark .tree-node.processing {
      background-color: #3b82f6; /* blue-500 */
      border-color: #2563eb; /* blue-600 */
 }
-
-.tree-node.visited {
-    opacity: 0.6;
+.tree-node.visited { /* Node fully processed in Traversal */
+    opacity: 0.6; /* Dim after processing */
+    pointer-events: auto; /* Still allow hover */
     border-color: #d1d5db; /* gray-300 */
 }
 .dark .tree-node.visited {
+    opacity: 0.5;
     border-color: #4b5563; /* gray-600 */
 }
 
+/* == BST Insertion Highlighting States == */
+.tree-node.comparing { /* Node being compared during BST insertion */
+    opacity: 1; pointer-events: auto; /* Ensure visible */
+    border-color: #facc15; /* yellow-400 */
+    /* Use a different background or just border */
+    background-color: #fef9c3; /* yellow-100 */
+    transform: translateX(-50%) scale(1.1);
+}
+.dark .tree-node.comparing {
+    border-color: #fde047; /* yellow-300 */
+    background-color: #422006; /* dark yellow/brown */
+}
+.tree-node.node-path { /* Node on the search path during BST insertion */
+    opacity: 1; pointer-events: auto; /* Ensure visible */
+    border-color: #a855f7; /* purple-500 */
+    background-color: #f3e8ff; /* purple-100 */
+}
+.dark .tree-node.node-path {
+    border-color: #c084fc; /* purple-400 */
+    background-color: #581c87; /* purple-900 */
+}
+.tree-node.inserting { /* Node just inserted in BST */
+    opacity: 1; pointer-events: auto; /* Ensure visible */
+    background-color: #4ade80; /* green-400 */
+    border-color: #22c55e; /* green-500 */
+    color: white;
+    transform: translateX(-50%) scale(1.2);
+}
+.dark .tree-node.inserting {
+     background-color: #22c55e; /* green-500 */
+     border-color: #16a34a; /* green-600 */
+}
+
+
+/* Traversal result container */
 .traversal-result-container {
-    margin-top: 10px;
+    margin-top: 0;
     padding: 8px;
-    border: 1px solid #e5e7eb; /* gray-200 */
+    border: 1px solid #e5e7eb;
     border-radius: 6px;
-    background-color: #f9fafb; /* gray-50 */
+    background-color: #f9fafb;
     min-height: 30px;
-    font-size: 0.875rem; /* text-sm */
+    font-size: 0.875rem;
     text-align: center;
-    color: #374151; /* gray-700 */
+    color: #374151;
+    width: 95%;
 }
 .dark .traversal-result-container {
-    border-color: #4b5563; /* gray-600 */
-    background-color: #374151; /* gray-700 */
-    color: #d1d5db; /* gray-300 */
+    border-color: #4b5563;
+    background-color: #374151;
+    color: #d1d5db;
 }
-
 .traversal-result-container span {
     margin: 0 4px;
     font-weight: 500;
 }
 
+
+/* === General UI === */
+/* Ensure code block respects dark mode */
+.dark pre { background-color: #1f2937; color: #d1d5db; }
+/* Basic syntax highlighting imitation */
+.code-keyword { color: #ec4899; } .dark .code-keyword { color: #f9a8d4; }
+.code-function { color: #8b5cf6; } .dark .code-function { color: #c4b5fd; }
+.code-comment { color: #6b7280; } .dark .code-comment { color: #9ca3af; }
+.code-number { color: #f59e0b; } .dark .code-number { color: #fcd34d; }
+.code-string { color: #10b981; } .dark .code-string { color: #6ee7b7; }
+
+/* Style details/summary for accordion */
+details > summary { list-style: none; cursor: pointer; padding: 4px 0; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: '+'; display: inline-block; width: 1em; margin-right: 0.5em; font-weight: bold; transition: transform 0.2s ease-in-out; }
+details[open] > summary::before { transform: rotate(45deg); }
+
+/* Style for active tab button */
+.tab-btn.active {
+    /* Styles applied by JS using Tailwind classes in switchTab function */
+}
