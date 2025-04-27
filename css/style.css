@@ -216,3 +216,104 @@ details[open] > summary::before { transform: rotate(45deg); }
     /* Styles applied by JS using Tailwind classes in switchTab function */
 }
 
+
+
+/* == Tree Traversal Specific Styles == */
+.tree-visualization-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    margin-bottom: 10px; /* Space below the tree */
+}
+.dark .tree-visualization-container {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+}
+
+.tree-nodes-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Allow nodes to wrap if needed */
+    gap: 15px; /* Space between nodes */
+    padding: 10px;
+    position: relative; /* For potential line drawing later */
+    min-height: 60px; /* Ensure container has some height */
+}
+
+.tree-node {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%; /* Circle shape */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    font-size: 14px;
+    border: 2px solid #9ca3af; /* gray-400 */
+    background-color: #fff; /* white */
+    color: #1f2937; /* gray-800 */
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+    position: relative; /* For potential connections */
+    z-index: 1; /* Ensure nodes are above lines if added */
+}
+.dark .tree-node {
+    border-color: #6b7280; /* gray-500 */
+    background-color: #4b5563; /* gray-600 */
+    color: #f3f4f6; /* gray-100 */
+}
+
+.tree-node.visiting {
+    border-color: #fbbf24; /* amber-400 */
+    transform: scale(1.1);
+}
+.dark .tree-node.visiting {
+    border-color: #fcd34d; /* amber-300 */
+}
+
+.tree-node.processing {
+    background-color: #60a5fa; /* blue-400 */
+    border-color: #3b82f6; /* blue-500 */
+    color: white;
+    transform: scale(1.2);
+}
+.dark .tree-node.processing {
+     background-color: #3b82f6; /* blue-500 */
+     border-color: #2563eb; /* blue-600 */
+}
+
+.tree-node.visited {
+    opacity: 0.6;
+    border-color: #d1d5db; /* gray-300 */
+}
+.dark .tree-node.visited {
+    border-color: #4b5563; /* gray-600 */
+}
+
+.traversal-result-container {
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    min-height: 30px;
+    font-size: 0.875rem; /* text-sm */
+    text-align: center;
+    color: #374151; /* gray-700 */
+}
+.dark .traversal-result-container {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+    color: #d1d5db; /* gray-300 */
+}
+
+.traversal-result-container span {
+    margin: 0 4px;
+    font-weight: 500;
+}
+
