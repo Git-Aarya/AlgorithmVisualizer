@@ -52,12 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
         'tree-traversals': typeof treeTraversalsConfig !== 'undefined' ? treeTraversalsConfig : null,
         'bst': typeof bstConfig !== 'undefined' ? bstConfig : null,
         'avl': typeof avlConfig !== 'undefined' ? avlConfig : null,
+        'heap-ops': typeof heapOpsConfig !== 'undefined' ? heapOpsConfig : null,
+        'tree-bfs-dfs': typeof treeBfsDfsConfig !== 'undefined' ? treeBfsDfsConfig : null,
         // Add entries for any other *implemented* algorithms you create files for
 
         // --- Placeholder definitions for algorithms NOT yet implemented ---
         // (Keep these directly defined here until you implement them)
-        'heap-ops': { name: 'Heap Operations (Insert/Extract)', code: '// TODO: Heap Operations Code', pseudocode: '// TODO: Heap Operations Pseudocode', setup: null, renderStep: null },
-        'tree-bfs-dfs': { name: 'BFS & DFS (Trees)', code: '// TODO: Tree BFS/DFS Code', pseudocode: '// TODO: Tree BFS/DFS Pseudocode', setup: null, renderStep: null },
         'graph-bfs': { name: 'BFS (Graphs)', code: '// TODO: Graph BFS Code', pseudocode: '// TODO: Graph BFS Pseudocode', setup: null, renderStep: null },
         'graph-dfs': { name: 'DFS (Graphs)', code: '// TODO: Graph DFS Code', pseudocode: '// TODO: Graph DFS Pseudocode', setup: null, renderStep: null },
         'dijkstra': { name: 'Dijkstra’s Algorithm', code: '// TODO: Dijkstra Code', pseudocode: '// TODO: Dijkstra Pseudocode', setup: null, renderStep: null },
@@ -529,5 +529,13 @@ document.addEventListener('DOMContentLoaded', () => {
     switchTab('code');
     resetVisualizationState();
     console.log("Algorithm Visualizer Initialized (Refactored).");
+
+    window.algorithmVisualizerMain = {
+        animationState: animationState,
+        updateButtonStates: updateButtonStates,
+        resetToStart: resetToStart,
+        playAnimation: playAnimation // Expose if needed by ops
+        // Add other functions if heap-ops absolutely needs them
+   };
 
 }); // End DOMContentLoaded

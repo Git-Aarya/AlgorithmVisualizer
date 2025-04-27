@@ -342,6 +342,93 @@ body {
 .traversal-result-container span { margin: 0 4px; font-weight: 500; }
 
 
+
+/* === BFS/DFS Tree Specific Styles === */
+
+/* Style for nodes in the BFS queue */
+.tree-node.queued {
+    border-color: #6366f1; /* indigo-500 */
+    background-color: #e0e7ff; /* indigo-100 */
+}
+.dark .tree-node.queued {
+    border-color: #818cf8; /* indigo-400 */
+    background-color: #3730a3; /* indigo-800 */
+}
+
+/* Style for nodes in the DFS stack (if using iterative DFS later) */
+.tree-node.stacked {
+    border-color: #d946ef; /* fuchsia-500 */
+    background-color: #fae8ff; /* fuchsia-100 */
+}
+.dark .tree-node.stacked {
+    border-color: #e879f9; /* fuchsia-400 */
+    background-color: #701a75; /* fuchsia-800 */
+}
+
+/* --- Controls and Result Display --- */
+.bfs-dfs-type-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    padding: 5px;
+    font-size: 0.875rem; /* 14px */
+}
+.bfs-dfs-type-selector label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    color: #374151; /* gray-700 */
+}
+.dark .bfs-dfs-type-selector label {
+    color: #d1d5db; /* gray-300 */
+}
+.bfs-dfs-type-selector input[type="radio"] {
+    cursor: pointer;
+    accent-color: #3b82f6; /* blue-500 */
+}
+
+.bfs-dfs-result-container {
+    margin-top: 5px; /* Reduced margin */
+    padding: 8px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    min-height: 30px;
+    font-size: 0.875rem; /* 14px */
+    text-align: center;
+    color: #374151; /* gray-700 */
+    width: 95%;
+    display: flex; /* Use flex for alignment */
+    flex-wrap: wrap; /* Allow wrapping */
+    justify-content: center;
+    align-items: center;
+    gap: 4px; /* Space between label and numbers */
+}
+.dark .bfs-dfs-result-container {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+    color: #d1d5db; /* gray-300 */
+}
+.bfs-dfs-result-container span:first-child {
+    font-weight: 600; /* Make "BFS/DFS Result:" bold */
+    margin-right: 5px;
+}
+.bfs-dfs-result-container span:not(:first-child) {
+    padding: 2px 5px;
+    background-color: #e5e7eb; /* gray-200 */
+    border-radius: 3px;
+    font-weight: 500;
+    font-size: 0.8rem; /* Slightly smaller */
+}
+.dark .bfs-dfs-result-container span:not(:first-child) {
+    background-color: #4b5563; /* gray-600 */
+}
+
+
+
 /* === General UI === */
 .dark pre { background-color: #1f2937; color: #d1d5db; }
 .code-keyword { color: #ec4899; } .dark .code-keyword { color: #f9a8d4; }
