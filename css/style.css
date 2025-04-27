@@ -217,7 +217,7 @@ body {
 }
 
 /* Styles for Tree Traversal Type Selector */
-.traversal-type-selector {
+.traversal-type-selector, .bfs-dfs-type-selector { /* Combined */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -226,812 +226,461 @@ body {
     padding: 5px;
     font-size: 0.875rem;
 }
-.traversal-type-selector label {
+.traversal-type-selector label, .bfs-dfs-type-selector label { /* Combined */
     display: flex;
     align-items: center;
     gap: 5px;
     cursor: pointer;
     color: #374151; /* gray-700 */
 }
-.dark .traversal-type-selector label {
+.dark .traversal-type-selector label, .dark .bfs-dfs-type-selector label { /* Combined */
     color: #d1d5db; /* gray-300 */
 }
-.traversal-type-selector input[type="radio"] {
+.traversal-type-selector input[type="radio"], .bfs-dfs-type-selector input[type="radio"] { /* Combined */
     cursor: pointer;
     accent-color: #3b82f6; /* blue-500 */
 }
 
 /* Tree node container */
 .tree-nodes-container {
-    display: block;
-    position: relative; /* Crucial for absolute children */
+    display: block; /* Changed from flex */
+    position: relative; /* Crucial for absolute positioning of nodes */
     width: 100%;
     min-height: 180px; /* Adjust as needed */
-    margin-bottom: 15px auto;
-    overflow-x: auto;   /* Allow horizontal scroll */
-    overflow: auto; /* Allow vertical scroll if needed */
+    margin: 15px auto; /* Add some margin */
+    overflow: auto; /* Allow scroll if tree is wide/tall */
     box-sizing: border-box;
 }
 
-/* Base Tree Node Style - VISIBLE BY DEFAULT */
+/* Base Tree Node Style */
 .tree-node {
-    width: 35px; /* Fixed width */
-    height: 35px; /* Fixed height */
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 500;
-    font-size: 14px;
+    width: 35px; height: 35px; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: 500; font-size: 14px;
     border: 2px solid #9ca3af; /* Default border: gray-400 */
     background-color: #fff; /* Default background: white */
     color: #1f2937; /* Default text: gray-800 */
     position: absolute; /* For layout */
-    /* transform: translateX(-50%); */ /* REMOVED - Using pixel positioning now */
+    transform: translateX(-50%); /* Center horizontally based on left % */
     z-index: 1;
-    /* --- Visibility controlled by JS/opacity for BST/AVL --- */
-    opacity: 1; /* VISIBLE by default */
-    pointer-events: auto; /* INTERACTIVE by default */
-    /* --- Transitions --- */
-    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out, transform 0.2s ease-in-out, opacity 0.3s ease-in-out, top 0.3s ease-in-out, left 0.3s ease-in-out;
+    opacity: 1; /* Visible by default, JS controls hiding for BST/AVL */
+    pointer-events: auto; /* Interactive by default */
+    transition: all 0.3s ease-in-out; /* Combined transitions */
 }
 .dark .tree-node {
-    border-color: #6b7280; /* gray-500 */
-    background-color: #4b5563; /* gray-600 */
-    color: #f3f4f6; /* gray-100 */
+    border-color: #6b7280; background-color: #4b5563; color: #f3f4f6;
 }
 
-/* == Tree Traversal Highlighting States == */
-.tree-node.visiting {
-    opacity: 1; pointer-events: auto; border-color: #fbbf24; /* amber-400 */
-    transform: scale(1.1); /* Scale from top-left */
+/* == Tree Traversal & BFS/DFS Highlighting States == */
+.tree-node.visiting { /* General visiting/exploring */
+    border-color: #fbbf24; /* amber-400 */
+    transform: translateX(-50%) scale(1.1);
 }
 .dark .tree-node.visiting { border-color: #fcd34d; /* amber-300 */ }
 
-.tree-node.processing { /* Used in Traversal */
-    opacity: 1; pointer-events: auto; background-color: #60a5fa; /* blue-400 */ border-color: #3b82f6; /* blue-500 */ color: white;
-    transform: scale(1.2); /* Scale from top-left */
+.tree-node.processing { /* Node being actively processed */
+    background-color: #60a5fa; /* blue-400 */ border-color: #3b82f6; /* blue-500 */ color: white;
+    transform: translateX(-50%) scale(1.2);
 }
-.dark .tree-node.processing { background-color: #3b82f6; /* blue-500 */ border-color: #2563eb; /* blue-600 */ }
+.dark .tree-node.processing { background-color: #3b82f6; border-color: #2563eb; }
 
-.tree-node.visited { /* Node fully processed in Traversal */
-    opacity: 0.6; pointer-events: auto; border-color: #d1d5db; /* gray-300 */
-    /* transform: scale(1.0); */ /* Reset scale */
+.tree-node.visited { /* Node fully processed/finished */
+    opacity: 0.6; border-color: #d1d5db; /* gray-300 */
 }
-.dark .tree-node.visited { opacity: 0.5; border-color: #4b5563; /* gray-600 */ }
+.dark .tree-node.visited { opacity: 0.5; border-color: #4b5563; }
+
+.tree-node.queued { /* BFS specific */
+    border-color: #6366f1; background-color: #e0e7ff;
+}
+.dark .tree-node.queued { border-color: #818cf8; background-color: #3730a3; }
+
+.tree-node.stacked { /* Iterative DFS specific */
+    border-color: #d946ef; background-color: #fae8ff;
+}
+.dark .tree-node.stacked { border-color: #e879f9; background-color: #701a75; }
 
 /* == BST/AVL Insertion Highlighting States == */
 .tree-node.comparing { /* Node being compared */
-    opacity: 1; pointer-events: auto; border-color: #facc15; /* yellow-400 */ background-color: #fef9c3; /* yellow-100 */
-    transform: scale(1.1); /* Scale from top-left */
+    border-color: #facc15; background-color: #fef9c3;
+    transform: translateX(-50%) scale(1.1);
 }
-.dark .tree-node.comparing { border-color: #fde047; /* yellow-300 */ background-color: #422006; }
+.dark .tree-node.comparing { border-color: #fde047; background-color: #422006; }
 
 .tree-node.node-path { /* Node on the search path */
-    opacity: 1; pointer-events: auto; border-color: #a855f7; /* purple-500 */ background-color: #f3e8ff; /* purple-100 */
+    border-color: #a855f7; background-color: #f3e8ff;
 }
-.dark .tree-node.node-path { border-color: #c084fc; /* purple-400 */ background-color: #581c87; /* purple-900 */ }
+.dark .tree-node.node-path { border-color: #c084fc; background-color: #581c87; }
 
 .tree-node.inserting { /* Node just inserted */
-    opacity: 1; pointer-events: auto; background-color: #4ade80; /* green-400 */ border-color: #22c55e; /* green-500 */ color: white;
-    transform: scale(1.2); /* Scale from top-left */
+    background-color: #4ade80; border-color: #22c55e; color: white;
+    transform: translateX(-50%) scale(1.2);
+    opacity: 1 !important; /* Ensure visible when inserting */
+    pointer-events: auto !important;
 }
-.dark .tree-node.inserting { background-color: #22c55e; /* green-500 */ border-color: #16a34a; /* green-600 */ }
+.dark .tree-node.inserting { background-color: #22c55e; border-color: #16a34a; }
 
 /* == AVL Tree Specific Styles == */
 .tree-node.imbalanced {
-    opacity: 1; pointer-events: auto; border-color: #f87171; /* red-400 */ background-color: #fee2e2; /* red-100 */
-    transform: scale(1.15); /* Scale from top-left */
+    border-color: #f87171; background-color: #fee2e2;
+    transform: translateX(-50%) scale(1.15);
 }
-.dark .tree-node.imbalanced { border-color: #ef4444; /* red-500 */ background-color: #7f1d1d; /* red-900 */ }
+.dark .tree-node.imbalanced { border-color: #ef4444; background-color: #7f1d1d; }
 
 .tree-node.rotating {
-    opacity: 1; pointer-events: auto; border-color: #fb923c; /* orange-400 */ box-shadow: 0 0 10px 2px #fb923c; /* Add glow */
-    transform: scale(1.1); /* Scale from top-left */
+    border-color: #fb923c; box-shadow: 0 0 10px 2px #fb923c;
+    transform: translateX(-50%) scale(1.1);
 }
-.dark .tree-node.rotating { border-color: #fdba74; /* orange-300 */ box-shadow: 0 0 10px 2px #fdba74;}
+.dark .tree-node.rotating { border-color: #fdba74; box-shadow: 0 0 10px 2px #fdba74;}
 
-
-/* Traversal result container */
-.traversal-result-container {
-    margin-top: 0; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px;
+/* Traversal/BFS/DFS result container */
+.traversal-result-container, .bfs-dfs-result-container { /* Combined */
+    margin-top: 5px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px;
     background-color: #f9fafb; min-height: 30px; font-size: 0.875rem;
     text-align: center; color: #374151; width: 95%;
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px;
 }
-.dark .traversal-result-container { border-color: #4b5563; background-color: #374151; color: #d1d5db; }
-.traversal-result-container span { margin: 0 4px; font-weight: 500; }
-
-
-
-/* === BFS/DFS Tree Specific Styles === */
-
-/* Style for nodes in the BFS queue */
-.tree-node.queued {
-    border-color: #6366f1; /* indigo-500 */
-    background-color: #e0e7ff; /* indigo-100 */
+.dark .traversal-result-container, .dark .bfs-dfs-result-container { /* Combined */
+    border-color: #4b5563; background-color: #374151; color: #d1d5db;
 }
-.dark .tree-node.queued {
-    border-color: #818cf8; /* indigo-400 */
-    background-color: #3730a3; /* indigo-800 */
+.traversal-result-container span:first-child, .bfs-dfs-result-container span:first-child { /* Combined */
+    font-weight: 600; margin-right: 5px;
+}
+.traversal-result-container span:not(:first-child), .bfs-dfs-result-container span:not(:first-child) { /* Combined */
+    padding: 2px 5px; background-color: #e5e7eb; border-radius: 3px;
+    font-weight: 500; font-size: 0.8rem;
+}
+.dark .traversal-result-container span:not(:first-child), .dark .bfs-dfs-result-container span:not(:first-child) { /* Combined */
+    background-color: #4b5563;
 }
 
-/* Style for nodes in the DFS stack (if using iterative DFS later) */
-.tree-node.stacked {
-    border-color: #d946ef; /* fuchsia-500 */
-    background-color: #fae8ff; /* fuchsia-100 */
-}
-.dark .tree-node.stacked {
-    border-color: #e879f9; /* fuchsia-400 */
-    background-color: #701a75; /* fuchsia-800 */
-}
-
-/* --- Controls and Result Display --- */
-.bfs-dfs-type-selector {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 10px;
-    padding: 5px;
-    font-size: 0.875rem; /* 14px */
-}
-.bfs-dfs-type-selector label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-    color: #374151; /* gray-700 */
-}
-.dark .bfs-dfs-type-selector label {
-    color: #d1d5db; /* gray-300 */
-}
-.bfs-dfs-type-selector input[type="radio"] {
-    cursor: pointer;
-    accent-color: #3b82f6; /* blue-500 */
-}
-
-.bfs-dfs-result-container {
-    margin-top: 5px; /* Reduced margin */
-    padding: 8px;
-    border: 1px solid #e5e7eb; /* gray-200 */
-    border-radius: 6px;
-    background-color: #f9fafb; /* gray-50 */
-    min-height: 30px;
-    font-size: 0.875rem; /* 14px */
-    text-align: center;
-    color: #374151; /* gray-700 */
-    width: 95%;
-    display: flex; /* Use flex for alignment */
-    flex-wrap: wrap; /* Allow wrapping */
-    justify-content: center;
-    align-items: center;
-    gap: 4px; /* Space between label and numbers */
-}
-.dark .bfs-dfs-result-container {
-    border-color: #4b5563; /* gray-600 */
-    background-color: #374151; /* gray-700 */
-    color: #d1d5db; /* gray-300 */
-}
-.bfs-dfs-result-container span:first-child {
-    font-weight: 600; /* Make "BFS/DFS Result:" bold */
-    margin-right: 5px;
-}
-.bfs-dfs-result-container span:not(:first-child) {
-    padding: 2px 5px;
-    background-color: #e5e7eb; /* gray-200 */
-    border-radius: 3px;
-    font-weight: 500;
-    font-size: 0.8rem; /* Slightly smaller */
-}
-.dark .bfs-dfs-result-container span:not(:first-child) {
-    background-color: #4b5563; /* gray-600 */
-}
 
 /* === Graph Visualization Specific Styles === */
-
 #graph-svg-container {
     border: 1px solid #e5e7eb; /* gray-200 */
     border-radius: 6px;
     background-color: #f9fafb; /* gray-50 */
-    display: block; /* Ensure SVG takes block space */
-    margin: 0 auto; /* Center if needed */
-    max-width: 100%; /* Ensure responsiveness */
+    display: block; margin: 0 auto; max-width: 100%;
 }
 .dark #graph-svg-container {
-    border-color: #4b5563; /* gray-600 */
-    background-color: #374151; /* gray-700 */
+    border-color: #4b5563; background-color: #374151;
 }
+
+/* Arrowhead for directed graphs */
+.graph-arrowhead {
+    fill: #9ca3af; transition: fill 0.3s ease-in-out;
+}
+.dark .graph-arrowhead { fill: #6b7280; }
 
 /* Default Edge Style */
 .graph-edge {
-    stroke: #9ca3af; /* gray-400 */
-    stroke-width: 1.5;
-    transition: stroke 0.3s ease-in-out, stroke-width 0.3s ease-in-out;
-}
-.dark .graph-edge {
-    stroke: #6b7280; /* gray-500 */
-}
-
-/* Active/Checking Edge Style */
-.graph-edge.active {
-    stroke: #fbbf24; /* amber-400 */
-    stroke-width: 3;
-}
-.dark .graph-edge.active {
-    stroke: #fcd34d; /* amber-300 */
-}
-
-/* Default Node Style */
-.graph-node {
-    fill: #fff; /* white */
-    stroke: #6b7280; /* gray-500 */
-    stroke-width: 2;
-    transition: fill 0.3s ease-in-out, stroke 0.3s ease-in-out, transform 0.2s ease-in-out;
-    cursor: default; /* Indicate non-interactive */
-}
-.dark .graph-node {
-    fill: #4b5563; /* gray-600 */
-    stroke: #d1d5db; /* gray-300 */
-}
-
-/* Node Label Style */
-.graph-node-label {
-    font-size: 11px;
-    font-weight: 500;
-    fill: #1f2937; /* gray-800 */
-    pointer-events: none; /* Labels don't block clicks on circle */
-    user-select: none; /* Prevent text selection */
-}
-.dark .graph-node-label {
-    fill: #f3f4f6; /* gray-100 */
-}
-
-/* --- Node States --- */
-.graph-node.initial {
-    /* Default style applies */
-    opacity: 0.8; /* Slightly dimmed initially */
-}
-.dark .graph-node.initial {
-     opacity: 0.7;
-}
-
-
-.graph-node.queued {
-    fill: #bfdbfe; /* blue-200 */
-    stroke: #3b82f6; /* blue-500 */
-}
-.dark .graph-node.queued {
-    fill: #374151; /* gray-700 */
-    stroke: #60a5fa; /* blue-400 */
-}
-
-.graph-node.processing {
-    fill: #fcd34d; /* amber-300 */
-    stroke: #f59e0b; /* amber-500 */
-    transform: scale(1.1); /* Slightly larger when processing */
-}
-.dark .graph-node.processing {
-    fill: #451a03; /* amber-900 */
-    stroke: #fcd34d; /* amber-300 */
-}
-
-.graph-node.visited {
-    fill: #d1d5db; /* gray-300 */
-    stroke: #9ca3af; /* gray-400 */
-    opacity: 0.7;
-}
-.dark .graph-node.visited {
-    fill: #374151; /* gray-700 */
-    stroke: #6b7280; /* gray-500 */
-     opacity: 0.6;
-}
-
-/* --- Queue/Result Display --- */
-.graph-queue-container, .graph-result-container {
-    padding: 8px;
-    border: 1px solid #e5e7eb; /* gray-200 */
-    border-radius: 6px;
-    background-color: #f9fafb; /* gray-50 */
-    min-height: 40px; /* Ensure some height */
-    font-size: 0.875rem; /* 14px */
-    color: #374151; /* gray-700 */
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
-    flex: 1; /* Allow containers to share space */
-}
-.dark .graph-queue-container, .dark .graph-result-container {
-    border-color: #4b5563; /* gray-600 */
-    background-color: #374151; /* gray-700 */
-    color: #d1d5db; /* gray-300 */
-}
-
-.graph-queue-container span:first-child, .graph-result-container span:first-child {
-    font-weight: 600; /* Bold label */
-}
-
-.queue-item, .result-item {
-    display: inline-flex; /* Use inline-flex for alignment */
-    align-items: center;
-    justify-content: center;
-    min-width: 24px; /* Minimum width */
-    height: 24px;
-    padding: 0 6px;
-    background-color: #e5e7eb; /* gray-200 */
-    border: 1px solid #d1d5db; /* gray-300 */
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 0.8rem; /* Slightly smaller */
-}
-.dark .queue-item, .dark .result-item {
-    background-color: #4b5563; /* gray-600 */
-    border-color: #6b7280; /* gray-500 */
-}
-
-
-/* === Graph Visualization Specific Styles (Additions/Modifications for DFS) === */
-
-/* Reusing .graph-node.processing for the active 'visiting' state in DFS */
-
-/* Style for edges during backtracking */
-.graph-edge.backtrack {
-    stroke: #a855f7; /* purple-500 */
-    stroke-width: 2.5;
-    stroke-dasharray: 4 2; /* Dashed line for backtrack */
-    opacity: 0.8;
-}
-.dark .graph-edge.backtrack {
-    stroke: #c084fc; /* purple-400 */
-}
-
-/* Ensure other graph styles from BFS are present */
-#graph-svg-container {
-    border: 1px solid #e5e7eb; /* gray-200 */
-    border-radius: 6px;
-    background-color: #f9fafb; /* gray-50 */
-    display: block;
-    margin: 0 auto;
-    max-width: 100%;
-}
-.dark #graph-svg-container {
-    border-color: #4b5563; /* gray-600 */
-    background-color: #374151; /* gray-700 */
-}
-.graph-edge {
-    stroke: #9ca3af; /* gray-400 */
-    stroke-width: 1.5;
+    stroke: #9ca3af; stroke-width: 1.5;
     transition: stroke 0.3s ease-in-out, stroke-width 0.3s ease-in-out, stroke-dasharray 0.3s ease-in-out;
 }
-.dark .graph-edge {
-    stroke: #6b7280; /* gray-500 */
-}
-.graph-edge.active {
-    stroke: #fbbf24; /* amber-400 */
-    stroke-width: 3;
-}
-.dark .graph-edge.active {
-    stroke: #fcd34d; /* amber-300 */
-}
-.graph-node {
-    fill: #fff; /* white */
-    stroke: #6b7280; /* gray-500 */
-    stroke-width: 2;
-    transition: fill 0.3s ease-in-out, stroke 0.3s ease-in-out, transform 0.2s ease-in-out;
-    cursor: default;
-}
-.dark .graph-node {
-    fill: #4b5563; /* gray-600 */
-    stroke: #d1d5db; /* gray-300 */
-}
-.graph-node-label {
-    font-size: 11px;
-    font-weight: 500;
-    fill: #1f2937; /* gray-800 */
-    pointer-events: none;
-    user-select: none;
-}
-.dark .graph-node-label {
-    fill: #f3f4f6; /* gray-100 */
-}
-.graph-node.initial {
-    opacity: 0.8;
-}
-.dark .graph-node.initial {
-     opacity: 0.7;
-}
-/* Using processing style for active DFS visit */
-.graph-node.processing {
-    fill: #fcd34d; /* amber-300 */
-    stroke: #f59e0b; /* amber-500 */
-    transform: scale(1.1);
-}
-.dark .graph-node.processing {
-    fill: #451a03; /* amber-900 */
-    stroke: #fcd34d; /* amber-300 */
-}
-.graph-node.visited {
-    fill: #d1d5db; /* gray-300 */
-    stroke: #9ca3af; /* gray-400 */
-    opacity: 0.7;
-}
-.dark .graph-node.visited {
-    fill: #374151; /* gray-700 */
-    stroke: #6b7280; /* gray-500 */
-     opacity: 0.6;
-}
-
-/* Result Display (Reused from BFS) */
-.graph-result-container {
-    padding: 8px;
-    border: 1px solid #e5e7eb; /* gray-200 */
-    border-radius: 6px;
-    background-color: #f9fafb; /* gray-50 */
-    min-height: 40px;
-    font-size: 0.875rem; /* 14px */
-    color: #374151; /* gray-700 */
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
-    flex: 1;
-}
-.dark .graph-result-container {
-    border-color: #4b5563; /* gray-600 */
-    background-color: #374151; /* gray-700 */
-    color: #d1d5db; /* gray-300 */
-}
-.graph-result-container span:first-child {
-    font-weight: 600;
-}
-.result-item {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 6px;
-    background-color: #e5e7eb; /* gray-200 */
-    border: 1px solid #d1d5db; /* gray-300 */
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 0.8rem;
-}
-.dark .result-item {
-    background-color: #4b5563; /* gray-600 */
-    border-color: #6b7280; /* gray-500 */
-}
-
-
-/* === Dijkstra Specific Styles === */
+.dark .graph-edge { stroke: #6b7280; }
 
 /* Edge Weight Label */
 .graph-edge-weight {
-    font-size: 10px;
-    fill: #4b5563; /* gray-600 */
-    font-weight: 500;
-    pointer-events: none;
-    user-select: none;
+    font-size: 10px; fill: #4b5563; font-weight: 500;
+    pointer-events: none; user-select: none;
 }
-.dark .graph-edge-weight {
-    fill: #d1d5db; /* gray-300 */
-}
+.dark .graph-edge-weight { fill: #d1d5db; }
+.graph-edge-weight.negative-weight { fill: #dc2626; font-weight: 700; }
+.dark .graph-edge-weight.negative-weight { fill: #f87171; }
 
-/* Node Distance Label */
+/* Default Node Style */
+.graph-node {
+    fill: #fff; stroke: #6b7280; stroke-width: 2;
+    transition: fill 0.3s ease-in-out, stroke 0.3s ease-in-out, transform 0.2s ease-in-out, opacity 0.3s ease-in-out;
+    cursor: default;
+}
+.dark .graph-node { fill: #4b5563; stroke: #d1d5db; }
+
+/* Node Label Style */
+.graph-node-label {
+    font-size: 11px; font-weight: 500; fill: #1f2937;
+    pointer-events: none; user-select: none;
+}
+.dark .graph-node-label { fill: #f3f4f6; }
+
+/* Node Distance Label (Dijkstra, Bellman-Ford) */
 .graph-node-distance {
-    font-size: 10px;
-    fill: #1d4ed8; /* blue-700 */
-    font-weight: 600;
-    pointer-events: none;
-    user-select: none;
+    font-size: 10px; fill: #1d4ed8; font-weight: 600;
+    pointer-events: none; user-select: none;
 }
-.dark .graph-node-distance {
-    fill: #93c5fd; /* blue-300 */
-}
+.dark .graph-node-distance { fill: #93c5fd; }
 
-/* Edge being actively checked/relaxed */
-.graph-edge.checking { /* Renamed from 'active' for clarity */
-    stroke: #f59e0b; /* amber-500 */
-    stroke-width: 3;
+/* --- Graph Node States --- */
+.graph-node.initial { opacity: 0.8; }
+.dark .graph-node.initial { opacity: 0.7; }
+.graph-node.queued { /* BFS, Dijkstra PQ */
+    fill: #bfdbfe; stroke: #3b82f6;
 }
-.dark .graph-edge.checking {
-    stroke: #fcd34d; /* amber-300 */
+.dark .graph-node.queued { fill: #374151; stroke: #60a5fa; }
+.graph-node.processing { /* BFS/DFS Active, Dijkstra Extract/Relax */
+    fill: #fcd34d; stroke: #f59e0b; transform: scale(1.1);
 }
-
-/* Edge that is part of the final shortest path tree */
-.graph-edge.path {
-    stroke: #16a34a; /* green-600 */
-    stroke-width: 3;
+.dark .graph-node.processing { fill: #78350f; stroke: #fcd34d; }
+.graph-node.visited { /* BFS/DFS/Dijkstra Finalized */
+    fill: #d1d5db; stroke: #9ca3af; opacity: 0.7;
 }
-.dark .graph-edge.path {
-    stroke: #4ade80; /* green-400 */
+.dark .graph-node.visited { fill: #374151; stroke: #6b7280; opacity: 0.6; }
+.graph-node.updated { /* Bellman-Ford Relax */
+    fill: #e0e7ff; stroke: #6366f1; transform: scale(1.1);
 }
-
-/* Node being processed (extracted from PQ or distance updated) */
-.graph-node.processing { /* Reusing style */
-    fill: #fcd34d; /* amber-300 */
-    stroke: #f59e0b; /* amber-500 */
-    transform: scale(1.1);
+.dark .graph-node.updated { fill: #3730a3; stroke: #818cf8; }
+.graph-node.final { /* Bellman-Ford Final (non-cycle) */
+    fill: #d1d5db; stroke: #9ca3af; opacity: 0.9;
 }
-.dark .graph-node.processing {
-    fill: #78350f; /* amber-900 */
-    stroke: #fcd34d; /* amber-300 */
+.dark .graph-node.final { fill: #374151; stroke: #6b7280; opacity: 0.8; }
+.graph-node.negative-cycle { /* Bellman-Ford, Floyd-Warshall */
+    fill: #fee2e2; stroke: #ef4444; transform: scale(1.15);
 }
-
-/* Node whose shortest path is finalized */
-.graph-node.visited { /* Reusing style */
-    fill: #d1d5db; /* gray-300 */
-    stroke: #9ca3af; /* gray-400 */
-    opacity: 0.8;
-}
-.dark .graph-node.visited {
-    fill: #374151; /* gray-700 */
-    stroke: #6b7280; /* gray-500 */
-     opacity: 0.7;
-}
-
-/* --- Priority Queue & Distance Table Display --- */
-.dijkstra-pq-container, .dijkstra-dist-table {
-    padding: 8px 12px;
-    border: 1px solid #e5e7eb; /* gray-200 */
-    border-radius: 6px;
-    background-color: #f9fafb; /* gray-50 */
-    min-height: 40px;
-    font-size: 0.875rem; /* 14px */
-    color: #374151; /* gray-700 */
-    flex: 1; /* Allow containers to share space */
-    overflow-x: auto; /* Allow horizontal scroll if content overflows */
-}
-.dark .dijkstra-pq-container, .dark .dijkstra-dist-table {
-    border-color: #4b5563; /* gray-600 */
-    background-color: #374151; /* gray-700 */
-    color: #d1d5db; /* gray-300 */
-}
-
-.dijkstra-pq-container span:first-child, .dijkstra-dist-table span:first-child {
-    font-weight: 600; /* Bold label */
-    display: block; /* Label on its own line */
-    margin-bottom: 4px;
-}
-
-.pq-item {
-    display: inline-block; /* Items flow inline */
-    margin-right: 8px;
-    margin-bottom: 4px; /* Spacing for wrapped items */
-    padding: 2px 6px;
-    background-color: #e0e7ff; /* indigo-100 */
-    border: 1px solid #c7d2fe; /* indigo-200 */
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 0.8rem;
-    white-space: nowrap; /* Prevent wrapping within an item */
-}
-.dark .pq-item {
-    background-color: #3730a3; /* indigo-800 */
-    border-color: #4338ca; /* indigo-700 */
-}
-
-.dist-table-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Responsive grid */
-    gap: 4px 8px; /* Row and column gap */
-}
-
-.dist-table-cell {
-    font-size: 0.8rem;
-    padding: 2px 4px;
-    background-color: #e5e7eb; /* gray-200 */
-    border-radius: 3px;
-    text-align: center;
-}
-.dark .dist-table-cell {
-    background-color: #4b5563; /* gray-600 */
-}
-.dist-table-cell b {
-    font-weight: 600;
-}
-
-/* Ensure other base graph styles are present */
-#graph-svg-container { /* ... keep existing styles ... */ }
-.graph-edge { /* ... keep existing styles ... */ }
-.dark .graph-edge { /* ... keep existing styles ... */ }
-.graph-node { /* ... keep existing styles ... */ }
-.dark .graph-node { /* ... keep existing styles ... */ }
-.graph-node-label { /* ... keep existing styles ... */ }
-.dark .graph-node-label { /* ... keep existing styles ... */ }
-.graph-node.initial { opacity: 1; } /* Dijkstra nodes start fully visible */
-.dark .graph-node.initial { opacity: 1; }
+.dark .graph-node.negative-cycle { fill: #7f1d1d; stroke: #f87171; }
 
 
-/* === Bellman-Ford Specific Styles === */
+/* --- Graph Edge States --- */
+.graph-edge.active { /* BFS/DFS Check */
+    stroke: #fbbf24; stroke-width: 3;
+}
+.dark .graph-edge.active { stroke: #fcd34d; }
+.graph-edge.checking { /* Dijkstra/Bellman-Ford Check */
+    stroke: #f59e0b; stroke-width: 2.5;
+}
+.dark .graph-edge.checking { stroke: #fcd34d; }
+.graph-edge.relaxed { /* Bellman-Ford Relax */
+    stroke: #a855f7; stroke-width: 2.5;
+}
+.dark .graph-edge.relaxed { stroke: #c084fc; }
+.graph-edge.path { /* Dijkstra/Bellman-Ford Final Path */
+    stroke: #16a34a; stroke-width: 3;
+}
+.dark .graph-edge.path { stroke: #4ade80; }
+.graph-edge.backtrack { /* DFS Backtrack */
+    stroke: #a855f7; stroke-width: 2.5; stroke-dasharray: 4 2; opacity: 0.8;
+}
+.dark .graph-edge.backtrack { stroke: #c084fc; }
+.graph-edge.negative-cycle { /* Bellman-Ford Cycle */
+    stroke: #ef4444; stroke-width: 3; stroke-dasharray: 5 3;
+}
+.dark .graph-edge.negative-cycle { stroke: #f87171; }
 
-/* Directed Edge Arrowhead */
-.graph-arrowhead {
-    fill: #9ca3af; /* Default arrow color matches edge */
-    transition: fill 0.3s ease-in-out;
-}
-.dark .graph-arrowhead {
-    fill: #6b7280;
-}
-
-/* Style arrowhead based on edge state */
-.graph-edge.checking + polygon, /* Select polygon following a checking line */
-line.checking ~ polygon { /* Select polygon sibling after checking line (less reliable) */
-    fill: #f59e0b; /* amber-500 */
-}
-.dark .graph-edge.checking + polygon,
-.dark line.checking ~ polygon {
-    fill: #fcd34d; /* amber-300 */
-}
-
-.graph-edge.relaxed + polygon,
-line.relaxed ~ polygon {
-     fill: #a855f7; /* purple-500 */
-}
-.dark .graph-edge.relaxed + polygon,
-.dark line.relaxed ~ polygon {
-     fill: #c084fc; /* purple-400 */
-}
-
-.graph-edge.path + polygon,
-line.path ~ polygon {
-    fill: #16a34a; /* green-600 */
-}
-.dark .graph-edge.path + polygon,
-.dark line.path ~ polygon {
-    fill: #4ade80; /* green-400 */
-}
-
-.graph-edge.negative-cycle + polygon,
-line.negative-cycle ~ polygon {
-    fill: #ef4444; /* red-500 */
-}
-.dark .graph-edge.negative-cycle + polygon,
-.dark line.negative-cycle ~ polygon {
-    fill: #f87171; /* red-400 */
-}
+/* Style arrowheads based on edge state */
+.graph-edge.checking + polygon, line.checking ~ polygon,
+.graph-edge.active + polygon, line.active ~ polygon { fill: #f59e0b; }
+.dark .graph-edge.checking + polygon, .dark line.checking ~ polygon,
+.dark .graph-edge.active + polygon, .dark line.active ~ polygon { fill: #fcd34d; }
+.graph-edge.relaxed + polygon, line.relaxed ~ polygon { fill: #a855f7; }
+.dark .graph-edge.relaxed + polygon, .dark line.relaxed ~ polygon { fill: #c084fc; }
+.graph-edge.path + polygon, line.path ~ polygon { fill: #16a34a; }
+.dark .graph-edge.path + polygon, .dark line.path ~ polygon { fill: #4ade80; }
+.graph-edge.backtrack + polygon, line.backtrack ~ polygon { fill: #a855f7; }
+.dark .graph-edge.backtrack + polygon, .dark line.backtrack ~ polygon { fill: #c084fc; }
+.graph-edge.negative-cycle + polygon, line.negative-cycle ~ polygon { fill: #ef4444; }
+.dark .graph-edge.negative-cycle + polygon, .dark line.negative-cycle ~ polygon { fill: #f87171; }
 
 
-/* Edge being checked */
-.graph-edge.checking {
-    stroke: #f59e0b; /* amber-500 */
-    stroke-width: 2.5; /* Thicker than default */
-}
-.dark .graph-edge.checking {
-    stroke: #fcd34d; /* amber-300 */
-}
-
-/* Edge that caused relaxation in the current step */
-.graph-edge.relaxed {
-    stroke: #a855f7; /* purple-500 */
-    stroke-width: 2.5;
-}
-.dark .graph-edge.relaxed {
-    stroke: #c084fc; /* purple-400 */
-}
-
-/* Edge involved in a detected negative cycle */
-.graph-edge.negative-cycle {
-    stroke: #ef4444; /* red-500 */
-    stroke-width: 3;
-    stroke-dasharray: 5 3;
-}
-.dark .graph-edge.negative-cycle {
-    stroke: #f87171; /* red-400 */
-}
-
-/* Edge part of final shortest path (if no neg cycle) */
-.graph-edge.path { /* Reusing Dijkstra style */
-    stroke: #16a34a; /* green-600 */
-    stroke-width: 3;
-}
-.dark .graph-edge.path {
-    stroke: #4ade80; /* green-400 */
-}
-
-
-/* Node whose distance was just updated */
-.graph-node.updated {
-    fill: #e0e7ff; /* indigo-100 */
-    stroke: #6366f1; /* indigo-500 */
-    transform: scale(1.1);
-}
-.dark .graph-node.updated {
-    fill: #3730a3; /* indigo-800 */
-    stroke: #818cf8; /* indigo-400 */
-}
-
-/* Node in the final state (distance finalized) */
-.graph-node.final { /* Using visited style */
-    fill: #d1d5db; /* gray-300 */
-    stroke: #9ca3af; /* gray-400 */
-    opacity: 0.9;
-}
-.dark .graph-node.final {
-    fill: #374151; /* gray-700 */
-    stroke: #6b7280; /* gray-500 */
-     opacity: 0.8;
-}
-
-/* Node involved in a detected negative cycle */
-.graph-node.negative-cycle {
-    fill: #fee2e2; /* red-100 */
-    stroke: #ef4444; /* red-500 */
-    transform: scale(1.15);
-}
-.dark .graph-node.negative-cycle {
-    fill: #7f1d1d; /* red-900 */
-    stroke: #f87171; /* red-400 */
-}
-
-/* Negative Weight Styling */
-.graph-edge-weight.negative-weight {
-    fill: #dc2626; /* red-600 */
-    font-weight: 700;
-}
-.dark .graph-edge-weight.negative-weight {
-    fill: #f87171; /* red-400 */
-}
-
-/* --- Iteration & Distance Table Display --- */
+/* --- Graph Queue/Result/PQ/Distance Table Display --- */
+.graph-queue-container, .graph-result-container,
+.dijkstra-pq-container, .dijkstra-dist-table,
 .bf-iteration-container, .bf-dist-table {
-    padding: 8px 12px;
-    border: 1px solid #e5e7eb; /* gray-200 */
-    border-radius: 6px;
-    background-color: #f9fafb; /* gray-50 */
-    min-height: 40px;
-    font-size: 0.875rem; /* 14px */
-    color: #374151; /* gray-700 */
-    flex: 1;
-    overflow-x: auto;
+    padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px;
+    background-color: #f9fafb; min-height: 40px; font-size: 0.875rem;
+    color: #374151; flex: 1; overflow-x: auto;
 }
+.dark .graph-queue-container, .dark .graph-result-container,
+.dark .dijkstra-pq-container, .dark .dijkstra-dist-table,
 .dark .bf-iteration-container, .dark .bf-dist-table {
-    border-color: #4b5563; /* gray-600 */
-    background-color: #374151; /* gray-700 */
-    color: #d1d5db; /* gray-300 */
+    border-color: #4b5563; background-color: #374151; color: #d1d5db;
 }
 
+.graph-queue-container, .graph-result-container,
+.dijkstra-pq-container { /* Containers with inline items */
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+}
+
+.graph-queue-container span:first-child, .graph-result-container span:first-child,
+.dijkstra-pq-container span:first-child, .dijkstra-dist-table span:first-child,
 .bf-iteration-container span:first-child, .bf-dist-table span:first-child {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 4px;
+    font-weight: 600; /* Bold label */
+    margin-right: 5px;
+    white-space: nowrap;
+}
+/* Labels on their own line for tables/iteration */
+.dijkstra-dist-table span:first-child,
+.bf-iteration-container span:first-child,
+.bf-dist-table span:first-child {
+    display: block; margin-bottom: 4px;
 }
 
-/* Reusing distance table styles from Dijkstra */
+/* Individual items in queue/result/pq */
+.queue-item, .result-item, .pq-item {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 24px; height: 24px; padding: 0 6px;
+    background-color: #e5e7eb; border: 1px solid #d1d5db; border-radius: 4px;
+    font-weight: 500; font-size: 0.8rem; white-space: nowrap;
+    margin-bottom: 4px; /* Spacing if wraps */
+}
+.dark .queue-item, .dark .result-item, .dark .pq-item {
+    background-color: #4b5563; border-color: #6b7280;
+}
+.pq-item { background-color: #e0e7ff; border-color: #c7d2fe; } /* Dijkstra PQ */
+.dark .pq-item { background-color: #3730a3; border-color: #4338ca; }
+
+/* Distance Table Grid */
 .dist-table-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 4px 8px;
 }
 .dist-table-cell {
-    font-size: 0.8rem;
-    padding: 2px 4px;
-    background-color: #e5e7eb; /* gray-200 */
-    border-radius: 3px;
-    text-align: center;
+    font-size: 0.8rem; padding: 2px 4px; background-color: #e5e7eb;
+    border-radius: 3px; text-align: center;
 }
-.dark .dist-table-cell {
-    background-color: #4b5563; /* gray-600 */
+.dark .dist-table-cell { background-color: #4b5563; }
+.dist-table-cell b { font-weight: 600; }
+
+
+/* === Floyd-Warshall Specific Styles === */
+.fw-matrix-container { margin-bottom: 1rem; }
+.fw-matrix {
+    border-collapse: collapse; margin: 0 auto; font-size: 0.8rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden;
 }
-.dist-table-cell b {
-    font-weight: 600;
+.fw-matrix th, .fw-matrix td {
+    border: 1px solid #d1d5db; padding: 4px 6px; text-align: center;
+    min-width: 35px; height: 30px; transition: background-color 0.3s ease-in-out;
+}
+.dark .fw-matrix th, .dark .fw-matrix td { border-color: #4b5563; }
+.fw-matrix-header { background-color: #f3f4f6; font-weight: 600; color: #374151; }
+.dark .fw-matrix-header { background-color: #374151; color: #d1d5db; }
+.fw-matrix-cell { background-color: #fff; color: #1f2937; font-family: monospace; }
+.dark .fw-matrix-cell { background-color: #4b5563; color: #f3f4f6; }
+
+/* FW Highlighting */
+.fw-matrix-cell.highlight-k-row, .fw-matrix-cell.highlight-k-col { background-color: #fef3c7; }
+.dark .fw-matrix-cell.highlight-k-row, .dark .fw-matrix-cell.highlight-k-col { background-color: #78350f; }
+.fw-matrix-cell.highlight-ik, .fw-matrix-cell.highlight-kj {
+    font-weight: bold; background-color: #fde68a; border: 1px solid #f59e0b;
+}s
+.dark .fw-matrix-cell.highlight-ik, .dark .fw-matrix-cell.highlight-kj { background-color: #b45309; border-color: #fcd34d; }
+.fw-matrix-cell.highlight-ij { font-weight: bold; border: 2px solid #2563eb; box-shadow: inset 0 0 0 1px #2563eb; }
+.dark .fw-matrix-cell.highlight-ij { border-color: #60a5fa; box-shadow: inset 0 0 0 1px #60a5fa; }
+.fw-matrix-cell.updated {
+    background-color: #a7f3d0; color: #047857; font-weight: bold; animation: pulse 0.6s ease-in-out;
+}
+.dark .fw-matrix-cell.updated { background-color: #065f46; color: #6ee7b7; }
+.fw-matrix-cell.negative-cycle {
+    background-color: #fecaca; color: #b91c1c; font-weight: bold; border: 2px solid #ef4444;
+}
+.dark .fw-matrix-cell.negative-cycle { background-color: #7f1d1d; color: #fca5a5; border-color: #f87171; }
+.fw-iteration-container { padding: 4px 8px; border-radius: 4px; background-color: #e5e7eb; }
+.dark .fw-iteration-container { background-color: #4b5563; }
+.fw-iteration-container span { font-weight: 500; }
+
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+
+/* === Floyd-Warshall Graph Visualization Styles === */
+
+/* Node Highlights */
+.graph-node.intermediate-k {
+    stroke: #f59e0b; /* amber-500 */
+    stroke-width: 3;
+    fill: #fef3c7; /* amber-100 */
+}
+.dark .graph-node.intermediate-k {
+    stroke: #fcd34d; /* amber-300 */
+    fill: #78350f; /* amber-900 */
 }
 
-/* Ensure other base graph styles are present */
-#graph-svg-container { /* ... keep existing styles ... */ }
-.graph-edge.directed { /* Style for directed edges */
-    /* marker-end is set in JS */
+.graph-node.source-i {
+    stroke: #2563eb; /* blue-600 */
+    stroke-width: 3;
+    fill: #dbeafe; /* blue-100 */
 }
-.graph-edge-weight { /* ... keep existing styles ... */ }
-.dark .graph-edge-weight { /* ... keep existing styles ... */ }
-.graph-node { /* ... keep existing styles ... */ }
-.dark .graph-node { /* ... keep existing styles ... */ }
-.graph-node-label { /* ... keep existing styles ... */ }
-.dark .graph-node-label { /* ... keep existing styles ... */ }
-.graph-node-distance { /* ... keep existing styles ... */ }
-.dark .graph-node-distance { /* ... keep existing styles ... */ }
-.graph-node.initial { /* ... keep existing styles ... */ }
-.dark .graph-node.initial { /* ... keep existing styles ... */ }
+.dark .graph-node.source-i {
+    stroke: #60a5fa; /* blue-400 */
+    fill: #1e3a8a; /* blue-900 */
+}
+
+.graph-node.dest-j {
+    stroke: #16a34a; /* green-600 */
+    stroke-width: 3;
+    fill: #d1fae5; /* green-100 */
+}
+.dark .graph-node.dest-j {
+    stroke: #4ade80; /* green-400 */
+    fill: #064e3b; /* green-900 */
+}
+
+.graph-node.checking-neg-cycle {
+     stroke: #ef4444; /* red-500 */
+     stroke-width: 3;
+     fill: #fee2e2; /* red-100 */
+}
+.dark .graph-node.checking-neg-cycle {
+     stroke: #f87171; /* red-400 */
+     fill: #7f1d1d; /* red-900 */
+}
+
+
+/* Edge Highlights */
+.graph-edge.path-ik {
+    stroke: #fbbf24; /* amber-400 */
+    stroke-width: 2.5;
+    stroke-dasharray: 5 3; /* Dashed for path component */
+}
+.dark .graph-edge.path-ik {
+    stroke: #fcd34d; /* amber-300 */
+}
+.graph-edge.path-kj {
+    stroke: #fbbf24; /* amber-400 */
+    stroke-width: 2.5;
+    stroke-dasharray: 5 3;
+}
+.dark .graph-edge.path-kj {
+    stroke: #fcd34d; /* amber-300 */
+}
+.graph-edge.path-ij { /* Direct edge being compared */
+    stroke: #6b7280; /* gray-500 */
+    stroke-width: 2.5;
+}
+.dark .graph-edge.path-ij {
+    stroke: #9ca3af; /* gray-400 */
+}
+
+.graph-edge.updated { /* Edge corresponding to matrix update */
+    stroke: #10b981; /* emerald-500 */
+    stroke-width: 3;
+    animation: pulse-edge 0.6s ease-in-out;
+}
+.dark .graph-edge.updated {
+    stroke: #6ee7b7; /* emerald-300 */
+}
+
+/* Final state for nodes when negative cycle exists */
+.graph-node.final-neg-cycle {
+    opacity: 0.5;
+}
+.dark .graph-node.final-neg-cycle {
+     opacity: 0.4;
+}
+
+
+/* Reusing negative cycle styles from Bellman-Ford */
+.graph-node.negative-cycle { /* Defined in Bellman-Ford styles */ }
+.dark .graph-node.negative-cycle { /* Defined in Bellman-Ford styles */ }
+
+/* Reusing final state style from Bellman-Ford */
+.graph-node.final { /* Defined in Bellman-Ford styles */ }
+.dark .graph-node.final { /* Defined in Bellman-Ford styles */ }
+
+
+@keyframes pulse-edge {
+  0% { stroke-width: 3; }
+  50% { stroke-width: 4.5; }
+  100% { stroke-width: 3; }
+}
+
+/* Ensure other required styles (matrix, graph base, etc.) are present */
 
 
 
