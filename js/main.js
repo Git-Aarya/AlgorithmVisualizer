@@ -58,11 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'dijkstra': typeof dijkstraConfig !== 'undefined' ? dijkstraConfig : null,
         'bellman-ford': typeof bellmanFordConfig !== 'undefined' ? bellmanFordConfig : null,
         'floyd-warshall': typeof floydWarshallConfig !== 'undefined' ? floydWarshallConfig : null,
+        'kruskal': typeof kruskalConfig !== 'undefined' ? kruskalConfig : null,
+        'prim': typeof primConfig !== 'undefined' ? primConfig : null,
+        'topo-sort': typeof topoSortConfig !== 'undefined' ? topoSortConfig : null,
         // Add other implemented algorithms here
         // Placeholders for unimplemented ones:
-        'kruskal': { name: 'Kruskal’s MST', code: '// TODO: Kruskal Code', pseudocode: '// TODO: Kruskal Pseudocode', setup: null, renderStep: null },
-        'prim': { name: 'Prim’s MST', code: '// TODO: Prim Code', pseudocode: '// TODO: Prim Pseudocode', setup: null, renderStep: null },
-        'topo-sort': { name: 'Topological Sorting', code: '// TODO: Topological Sort Code', pseudocode: '// TODO: Topological Sort Pseudocode', setup: null, renderStep: null },
         'fibonacci': { name: 'Fibonacci (DP/Memo)', code: '// TODO: Fibonacci Code', pseudocode: '// TODO: Fibonacci Pseudocode', setup: null, renderStep: null },
         'lcs': { name: 'Longest Common Subsequence', code: '// TODO: LCS Code', pseudocode: '// TODO: LCS Pseudocode', setup: null, renderStep: null },
         'knapsack': { name: '0/1 Knapsack', code: '// TODO: Knapsack Code', pseudocode: '// TODO: Knapsack Pseudocode', setup: null, renderStep: null },

@@ -622,6 +622,423 @@ body {
 }
 
 
+/* === Kruskal's MST Specific Styles === */
+
+/* Node States */
+.graph-node.checking { /* Node connected to edge being checked */
+    stroke: #f59e0b; /* amber-500 */
+    stroke-width: 3;
+}
+.dark .graph-node.checking {
+    stroke: #fcd34d; /* amber-300 */
+}
+
+.graph-node.in-mst { /* Node part of the constructed MST */
+    fill: #dcfce7; /* green-100 */
+    stroke: #16a34a; /* green-600 */
+}
+.dark .graph-node.in-mst {
+    fill: #052e16; /* green-950 */
+    stroke: #4ade80; /* green-400 */
+}
+
+/* Edge States */
+.graph-edge.checking { /* Edge being considered */
+    stroke: #f59e0b; /* amber-500 */
+    stroke-width: 3;
+}
+.dark .graph-edge.checking {
+    stroke: #fcd34d; /* amber-300 */
+}
+
+.graph-edge.mst { /* Edge added to the MST */
+    stroke: #16a34a; /* green-600 */
+    stroke-width: 3.5; /* Make MST edges slightly thicker */
+}
+.dark .graph-edge.mst {
+    stroke: #4ade80; /* green-400 */
+}
+
+.graph-edge.discarded { /* Edge that forms a cycle */
+    stroke: #ef4444; /* red-500 */
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+    opacity: 0.6;
+}
+.dark .graph-edge.discarded {
+    stroke: #f87171; /* red-400 */
+    opacity: 0.5;
+}
+
+/* --- Sorted Edge List and Cost Display --- */
+.kruskal-edge-list, .kruskal-cost-container {
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    min-height: 40px;
+    font-size: 0.875rem; /* 14px */
+    color: #374151; /* gray-700 */
+    flex: 1; /* Allow containers to share space */
+}
+.dark .kruskal-edge-list, .dark .kruskal-cost-container {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+    color: #d1d5db; /* gray-300 */
+}
+
+.kruskal-edge-list span:first-child, .kruskal-cost-container span:first-child {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.kruskal-edge-list .edge-items {
+    max-height: 80px; /* Limit height and make scrollable */
+    overflow-y: auto;
+    padding-right: 5px; /* Space for scrollbar */
+}
+
+.kruskal-edge-item {
+    display: block; /* Each edge on its own line */
+    margin-bottom: 2px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border 0.3s ease-in-out;
+    border: 1px solid transparent;
+}
+
+.kruskal-edge-item.checking {
+    background-color: #fef3c7; /* amber-100 */
+    border-color: #fde68a; /* amber-200 */
+    font-weight: 500;
+}
+.dark .kruskal-edge-item.checking {
+    background-color: #78350f; /* amber-900 */
+    border-color: #b45309; /* amber-700 */
+}
+
+.kruskal-edge-item.mst {
+    background-color: #dcfce7; /* green-100 */
+    color: #065f46; /* green-800 */
+    font-weight: 500;
+}
+.dark .kruskal-edge-item.mst {
+    background-color: #052e16; /* green-950 */
+    color: #86efac; /* green-300 */
+}
+
+.kruskal-edge-item.discarded {
+    background-color: #fee2e2; /* red-100 */
+    color: #991b1b; /* red-800 */
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+.dark .kruskal-edge-item.discarded {
+    background-color: #450a0a; /* red-950 */
+    color: #fca5a5; /* red-300 */
+     opacity: 0.6;
+}
+
+.kruskal-cost-container {
+    text-align: center;
+    font-size: 1rem;
+    display: flex; /* Center content vertically */
+    flex-direction: column;
+    justify-content: center;
+    min-width: 150px; /* Give cost container some minimum width */
+    flex-grow: 0; /* Don't let it grow too much */
+    flex-shrink: 0;
+}
+.kruskal-cost-container span {
+    font-weight: bold;
+}
+
+
+/* === Prim's MST Specific Styles === */
+
+/* Node Key Label */
+.graph-node-key {
+    font-size: 9px;
+    fill: #4f46e5; /* indigo-600 */
+    font-weight: 500;
+    pointer-events: none;
+    user-select: none;
+}
+.dark .graph-node-key {
+    fill: #a5b4fc; /* indigo-300 */
+}
+
+/* Node States */
+.graph-node.in-pq { /* Node whose key was updated, potentially in PQ */
+    stroke: #ea580c; /* orange-600 */
+    fill: #ffedd5; /* orange-100 */
+}
+.dark .graph-node.in-pq {
+    stroke: #fb923c; /* orange-400 */
+    fill: #7c2d12; /* orange-900 */
+}
+
+.graph-node.processing { /* Node just extracted from PQ */
+    stroke: #d946ef; /* fuchsia-500 */
+    fill: #fae8ff; /* fuchsia-100 */
+    transform: scale(1.15);
+}
+.dark .graph-node.processing {
+    stroke: #e879f9; /* fuchsia-400 */
+    fill: #701a75; /* fuchsia-800 */
+}
+
+.graph-node.in-mst { /* Node finalized in MST */
+    fill: #dcfce7; /* green-100 */
+    stroke: #16a34a; /* green-600 */
+}
+.dark .graph-node.in-mst {
+    fill: #052e16; /* green-950 */
+    stroke: #4ade80; /* green-400 */
+}
+
+.graph-node.checking { /* Neighbor node being checked */
+     stroke: #ca8a04; /* yellow-600 */
+     /* fill: #fef9c3; */ /* yellow-100 - Optional fill */
+     stroke-width: 2.5;
+}
+.dark .graph-node.checking {
+     stroke: #facc15; /* yellow-400 */
+     /* fill: #422006; */ /* yellow-950 */
+}
+
+
+/* Edge States */
+.graph-edge.checking { /* Edge being checked from processing node */
+    stroke: #f59e0b; /* amber-500 */
+    stroke-width: 2.5;
+}
+.dark .graph-edge.checking {
+    stroke: #fcd34d; /* amber-300 */
+}
+
+.graph-edge.candidate { /* Edge representing the current best key for a node */
+    stroke: #6366f1; /* indigo-500 */
+    stroke-width: 2;
+    stroke-dasharray: 3 3;
+    opacity: 0.8;
+}
+.dark .graph-edge.candidate {
+    stroke: #818cf8; /* indigo-400 */
+    opacity: 0.7;
+}
+
+.graph-edge.mst { /* Edge added to MST */
+    stroke: #16a34a; /* green-600 */
+    stroke-width: 3.5;
+}
+.dark .graph-edge.mst {
+    stroke: #4ade80; /* green-400 */
+}
+
+/* --- Key/Parent Table and Cost Display --- */
+.prim-keyparent-table, .prim-cost-container {
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    min-height: 40px;
+    font-size: 0.875rem; /* 14px */
+    color: #374151; /* gray-700 */
+    flex: 1;
+    overflow-x: auto;
+}
+.dark .prim-keyparent-table, .dark .prim-cost-container {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+    color: #d1d5db; /* gray-300 */
+}
+
+.prim-keyparent-table span:first-child, .prim-cost-container span:first-child {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.keyparent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Adjust minmax */
+    gap: 4px 8px;
+}
+
+.keyparent-cell {
+    font-size: 0.8rem;
+    padding: 2px 4px;
+    background-color: #e5e7eb; /* gray-200 */
+    border-radius: 3px;
+    text-align: center;
+    border: 1px solid transparent; /* For highlighting */
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+.dark .keyparent-cell {
+    background-color: #4b5563; /* gray-600 */
+}
+.keyparent-cell b { font-weight: 600; }
+
+/* Highlight cell corresponding to node state */
+.keyparent-cell.processing { background-color: #fcd34d; border-color: #f59e0b;}
+.dark .keyparent-cell.processing { background-color: #78350f; border-color: #fcd34d;}
+.keyparent-cell.in-mst { background-color: #dcfce7; border-color: #16a34a;}
+.dark .keyparent-cell.in-mst { background-color: #052e16; border-color: #4ade80;}
+.keyparent-cell.in-pq { background-color: #ffedd5; border-color: #ea580c;}
+.dark .keyparent-cell.in-pq { background-color: #7c2d12; border-color: #fb923c;}
+
+
+.prim-cost-container { /* Reusing Kruskal style */
+    text-align: center;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 150px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+.prim-cost-container span { font-weight: bold; }
+
+
+
+/* === Topological Sort Specific Styles (Update) === */
+
+/* Node In-Degree Label */
+.graph-node-indegree {
+    font-size: 10px; /* Increased size */
+    fill: #1d4ed8; /* Changed color to blue-700 for better visibility */
+    font-weight: 600; /* Make it bolder */
+    pointer-events: none;
+    user-select: none;
+    transition: fill 0.3s ease-in-out, transform 0.3s ease-in-out; /* Add transition */
+}
+.dark .graph-node-indegree {
+    fill: #93c5fd; /* blue-300 */
+}
+.graph-node-indegree.indegree-updated {
+    fill: #be123c; /* rose-700 */
+    font-weight: 700;
+    transform: scale(1.2); /* Slightly pulse size */
+}
+.dark .graph-node-indegree.indegree-updated {
+    fill: #fda4af; /* rose-300 */
+}
+
+
+/* Node States (Keep existing styles) */
+.graph-node.in-queue { /* ... */ }
+.dark .graph-node.in-queue { /* ... */ }
+.graph-node.processing { /* ... */ }
+.dark .graph-node.processing { /* ... */ }
+.graph-node.sorted { /* ... */ }
+.dark .graph-node.sorted { /* ... */ }
+.graph-node.cycle { /* ... */ }
+.dark .graph-node.cycle { /* ... */ }
+
+
+/* Edge States (Keep existing styles) */
+.graph-edge.processing { /* ... */ }
+.dark .graph-edge.processing { /* ... */ }
+.graph-edge.processing + polygon, line.processing ~ polygon { /* ... */ }
+.dark .graph-edge.processing + polygon, .dark line.processing ~ polygon { /* ... */ }
+
+
+/* --- Queue and Result Display (Visual Update) --- */
+.topo-queue-container, .topo-result-container {
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 6px;
+    background-color: #f9fafb; /* gray-50 */
+    min-height: 45px; /* Slightly taller */
+    font-size: 0.875rem; /* 14px */
+    color: #374151; /* gray-700 */
+    flex: 1;
+    overflow-x: auto;
+    display: flex; /* Use flex for items */
+    flex-wrap: wrap; /* Allow wrapping */
+    align-items: center;
+    gap: 6px; /* Gap between label and items, and between items */
+}
+.dark .topo-queue-container, .dark .topo-result-container {
+    border-color: #4b5563; /* gray-600 */
+    background-color: #374151; /* gray-700 */
+    color: #d1d5db; /* gray-300 */
+}
+
+.topo-queue-container span:first-child, .topo-result-container span:first-child {
+    font-weight: 600;
+    margin-right: 5px;
+    white-space: nowrap;
+    align-self: flex-start; /* Align label to top if container wraps */
+    padding-top: 4px; /* Align label better with boxes */
+}
+
+/* Common style for items in queue/result */
+.topo-vis-item {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; /* Slightly wider */
+    height: 28px; /* Slightly taller */
+    padding: 0 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.85rem; /* Slightly larger font */
+    font-family: monospace; /* Consistent width */
+    border: 1px solid; /* Add border for definition */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+}
+.dark .topo-vis-item {
+     box-shadow: none;
+}
+
+/* Specific styles for queue items */
+.topo-queue-item {
+    background-color: #e0e7ff; /* indigo-100 */
+    border-color: #c7d2fe; /* indigo-200 */
+    color: #3730a3; /* indigo-800 */
+}
+.dark .topo-queue-item {
+    background-color: #3730a3; /* indigo-800 */
+    border-color: #4338ca; /* indigo-700 */
+    color: #e0e7ff; /* indigo-100 */
+}
+
+/* Specific styles for result items */
+.topo-result-item {
+    background-color: #d1fae5; /* green-100 */
+    border-color: #a7f3d0; /* green-200 */
+    color: #047857; /* green-700 */
+}
+.dark .topo-result-item {
+    background-color: #064e3b; /* green-900 */
+    border-color: #052e16; /* green-950 */
+    color: #a7f3d0; /* green-300 */
+}
+
+/* Highlight newly added result item */
+.topo-result-item.newly-added {
+    transform: scale(1.1);
+    border-color: #16a34a; /* green-600 */
+}
+.dark .topo-result-item.newly-added {
+    border-color: #4ade80; /* green-400 */
+}
+
+
+/* Ensure other required styles (graph base, etc.) are present */
+
+
+
+
+
+
+
+
 /* Edge Highlights */
 .graph-edge.path-ik {
     stroke: #fbbf24; /* amber-400 */
