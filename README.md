@@ -110,3 +110,6 @@ To run this project locally:
 3.  Open the `index.html` file in a modern web browser that supports JavaScript ES6 modules and Tailwind CSS (via CDN).
 
 No special build steps or dependencies are required beyond a web browser, as Tailwind CSS is included via a CDN.
+
+
+![AlgorithmVisualizer ScreenShot](AlgorithmVisualizer-SS.png)
