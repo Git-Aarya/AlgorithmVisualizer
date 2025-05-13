@@ -35,6 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
         speed: 500,
         targetValue: null,
         numNodes: 0, // For graph/matrix algorithms
+        numItems: 0, // For knapsack
+        capacity: 0, // For knapsack
+        items: [],   // For knapsack
+        m: 0,        // For LCS
+        n: 0,        // For LCS
+        initialSortedEdges: [], // For Kruskal
     };
 
     // --- Collect Algorithm Definitions ---
@@ -61,34 +67,27 @@ document.addEventListener('DOMContentLoaded', () => {
         'kruskal': typeof kruskalConfig !== 'undefined' ? kruskalConfig : null,
         'prim': typeof primConfig !== 'undefined' ? primConfig : null,
         'topo-sort': typeof topoSortConfig !== 'undefined' ? topoSortConfig : null,
-        // Add other implemented algorithms here
-        // Placeholders for unimplemented ones:
-        'fibonacci': { name: 'Fibonacci (DP/Memo)', code: '// TODO: Fibonacci Code', pseudocode: '// TODO: Fibonacci Pseudocode', setup: null, renderStep: null },
-        'lcs': { name: 'Longest Common Subsequence', code: '// TODO: LCS Code', pseudocode: '// TODO: LCS Pseudocode', setup: null, renderStep: null },
-        'knapsack': { name: '0/1 Knapsack', code: '// TODO: Knapsack Code', pseudocode: '// TODO: Knapsack Pseudocode', setup: null, renderStep: null },
-        'coin-change': { name: 'Coin Change', code: '// TODO: Coin Change Code', pseudocode: '// TODO: Coin Change Pseudocode', setup: null, renderStep: null },
-        'mcm': { name: 'Matrix Chain Multiplication', code: '// TODO: MCM Code', pseudocode: '// TODO: MCM Pseudocode', setup: null, renderStep: null },
-        'n-queens': { name: 'N-Queens', code: '// TODO: N-Queens Code', pseudocode: '// TODO: N-Queens Pseudocode', setup: null, renderStep: null },
-        'sudoku': { name: 'Sudoku Solver', code: '// TODO: Sudoku Solver Code', pseudocode: '// TODO: Sudoku Solver Pseudocode', setup: null, renderStep: null },
-        'rat-maze': { name: 'Rat in a Maze', code: '// TODO: Rat Maze Code', pseudocode: '// TODO: Rat Maze Pseudocode', setup: null, renderStep: null },
-        'word-search': { name: 'Word Search', code: '// TODO: Word Search Code', pseudocode: '// TODO: Word Search Pseudocode', setup: null, renderStep: null },
-        'union-find': { name: 'Union-Find', code: '// TODO: Union-Find Code', pseudocode: '// TODO: Union-Find Pseudocode', setup: null, renderStep: null },
-        'kmp': { name: 'KMP Algorithm', code: '// TODO: KMP Code', pseudocode: '// TODO: KMP Pseudocode', setup: null, renderStep: null },
-        'rabin-karp': { name: 'Rabin-Karp', code: '// TODO: Rabin-Karp Code', pseudocode: '// TODO: Rabin-Karp Pseudocode', setup: null, renderStep: null },
-        'sliding-window': { name: 'Sliding Window', code: '// TODO: Sliding Window Code', pseudocode: '// TODO: Sliding Window Pseudocode', setup: null, renderStep: null },
-        'two-pointers': { name: 'Two Pointers', code: '// TODO: Two Pointers Code', pseudocode: '// TODO: Two Pointers Pseudocode', setup: null, renderStep: null },
+        'fibonacci': typeof fibonacciConfig !== 'undefined' ? fibonacciConfig : null,
+        'lcs': typeof lcsConfig !== 'undefined' ? lcsConfig : null,
+        'coin-change': typeof coinChangeConfig !== 'undefined' ? coinChangeConfig : null,
+        'mcm': typeof mcmConfig !== 'undefined' ? mcmConfig : null,
+        'n-queens': typeof nQueensConfig !== 'undefined' ? nQueensConfig : null,
+        'sudoku-solver': typeof sudokuSolverConfig !== 'undefined' ? sudokuSolverConfig : null,
+        'rat-maze': typeof ratMazeConfig !== 'undefined' ? ratMazeConfig : null,
     };
 
     // --- Filter out missing algorithms and assign defaults ---
     Object.keys(algorithms).forEach(key => {
         if (algorithms[key] === null) {
-            console.warn(`Algorithm config for '${key}' not found or loaded. Removing from list.`);
+            console.warn(`[Main Init] Algorithm config for '${key}' not found or loaded. Removing from list.`);
             delete algorithms[key];
         } else {
             if (!algorithms[key].setup) {
+                console.warn(`[Main Init] Assigning default setup for '${key}'.`);
                 algorithms[key].setup = defaultSetup.bind(algorithms[key]);
             }
             if (!algorithms[key].renderStep) {
+                 console.warn(`[Main Init] Assigning default renderStep for '${key}'.`);
                 algorithms[key].renderStep = defaultRender;
             }
         }
@@ -97,63 +96,53 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Default/Placeholder Functions ---
     function defaultSetup(data) {
         const algoName = this.name || 'Algorithm';
+        console.log(`[Default Setup] Running for ${algoName}.`); // Log when default is used
         const visArea = document.getElementById('visualization-area');
         const extraVisArea = document.getElementById('extra-visualization-area');
-        // Display message in the appropriate area based on expected type
-        const displayArea = (this.type === 'tree' || this.type === 'graph') ? extraVisArea : visArea;
+        const displayArea = (this.type === 'tree' || this.type === 'graph' || this.type === 'dynamic-programming') ? extraVisArea : visArea;
         if (displayArea) {
              displayArea.innerHTML = `<p class="text-gray-500 dark:text-gray-400 self-center p-4">${algoName} visualization not implemented yet.</p>`;
-             // Ensure the correct area is visible
-             if (this.type === 'tree' || this.type === 'graph') {
+             if (this.type === 'tree' || this.type === 'graph' || this.type === 'dynamic-programming') {
                  if (visArea) visArea.style.display = 'none';
                  if (extraVisArea) extraVisArea.style.display = 'block';
              } else {
                  if (visArea) visArea.style.display = 'flex';
-                 if (extraVisArea) extraVisArea.style.display = 'block'; // Keep potentially needed
-                 if (extraVisArea) extraVisArea.innerHTML = ''; // Clear extra if not tree/graph
+                 if (extraVisArea) { extraVisArea.style.display = 'block'; extraVisArea.innerHTML = ''; }
              }
+        } else {
+             console.error(`[Default Setup] Could not find display area for ${algoName}`);
         }
         if (statusMessage) statusMessage.textContent = 'Visualization not implemented.';
-        return { steps: [], elements: null, countElements: [], outputElements: [], target: null, numNodes: 0 };
+        // Return a structure that won't break main.js
+        return { steps: [], elements: null, numItems: 0, capacity: 0, items: [], m: 0, n: 0, numNodes: 0, initialSortedEdges: [], target: null };
     }
 
     function defaultRender(step, elements, animationState) {
         if (statusMessage) statusMessage.textContent = 'Rendering logic not implemented for this step.';
+        console.warn("[Default Render] Rendering logic not implemented.");
     }
 
     // --- Helper Functions ---
-    function calculateDelay(sliderValue) {
+    function calculateDelay(sliderValue) { /* ... (same as before) ... */
         const minDelay = 50; const maxDelay = 1500;
         const value = Math.max(1, Math.min(10, sliderValue));
         return maxDelay - (value - 1) * (maxDelay - minDelay) / (10 - 1);
-    }
-
-    function generateSampleData(algoKey) {
-        const size = 20; // Default size for bar-based algorithms
-        let minVal = 10; let maxVal = 100;
+     }
+    function generateSampleData(algoKey) { /* ... (same as before) ... */
+        const size = 20; let minVal = 10; let maxVal = 100;
         let onlyPositiveInts = false; let requiresSorted = false;
-
-        if (algorithms[algoKey]) {
-            if (algorithms[algoKey].requiresPositiveInts) { onlyPositiveInts = true; minVal = 0; maxVal = 50; }
-            if (algorithms[algoKey].requiresSortedData) { requiresSorted = true; }
-            // Graph/Tree algorithms generate their own structure in setup, so data array isn't primary
-        }
-
-        let data = Array.from({ length: size }, () => {
-            let val = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
-            return onlyPositiveInts ? Math.max(0, val) : val;
-        });
+        if (algorithms[algoKey]) { if (algorithms[algoKey].requiresPositiveInts) { onlyPositiveInts = true; minVal = 0; maxVal = 50; } if (algorithms[algoKey].requiresSortedData) { requiresSorted = true; } }
+        let data = Array.from({ length: size }, () => { let val = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal; return onlyPositiveInts ? Math.max(0, val) : val; });
         if (requiresSorted) { data.sort((a, b) => a - b); }
-        console.log("Generated sample data (for non-graph/tree):", data);
-        return data; // Return array, even if graph/tree setup ignores it
-    }
+        console.log("[Generate Data] Generated:", data); return data;
+     }
 
     // --- Core Application Logic ---
     function selectAlgorithm(algoKey) {
-        console.log(`Selecting algorithm: ${algoKey}`);
+        console.log(`[Select Algorithm] Attempting: ${algoKey}`);
         if (!algorithms[algoKey]) {
-            console.error(`Algorithm "${algoKey}" not found.`);
-            resetVisualizationState(); // Reset UI
+            console.error(`[Select Algorithm] Algorithm "${algoKey}" not found.`);
+            resetVisualizationState();
             currentAlgoTitle.textContent = 'Algorithm Not Found';
             codeBlock.innerHTML = '// Algorithm definition missing';
             pseudoBlock.textContent = '// Algorithm definition missing';
@@ -167,10 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseAnimation();
         currentAlgorithmKey = algoKey;
         currentAlgorithm = algorithms[algoKey];
-        // Generate data, although graph/tree setups might ignore it
-        currentData = generateSampleData(currentAlgorithmKey);
+        currentData = generateSampleData(currentAlgorithmKey); // Generate data even if setup ignores it
 
-        console.log(`Selected: ${currentAlgorithm.name}`);
+        console.log(`[Select Algorithm] Selected: ${currentAlgorithm.name}`);
         currentAlgoTitle.textContent = currentAlgorithm.name;
         codeBlock.innerHTML = currentAlgorithm.code || '// Code not available';
         pseudoBlock.textContent = currentAlgorithm.pseudocode || '// Pseudocode not available';
@@ -180,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setupVisualization() {
         if (!currentAlgorithm) {
-            console.warn("Setup called without an algorithm selected.");
+            console.warn("[Setup Vis] Called without an algorithm selected.");
             visualizationArea.innerHTML = '<p class="text-gray-500 dark:text-gray-400 self-center">Select an Algorithm</p>';
             extraVisualizationArea.innerHTML = '';
             statusMessage.textContent = 'Error: No algorithm selected.';
@@ -188,377 +176,170 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        console.log(`Setting up visualization for: ${currentAlgorithm.name}`);
+        console.log(`[Setup Vis] Starting for: ${currentAlgorithm.name}`);
         pauseAnimation(); // Ensure animation is stopped
 
         // --- Reset Animation State ---
+        console.log("[Setup Vis] Resetting animationState.");
         animationState = {
             ...animationState, // Preserve speed setting
-            steps: [],
-            elements: null, // Reset elements
-            countElements: [],
-            outputElements: [],
-            currentStep: -1,
-            targetValue: null,
-            numNodes: 0,
+            steps: [], elements: null, countElements: [], outputElements: [],
+            currentStep: -1, targetValue: null, numNodes: 0, numItems: 0,
+            capacity: 0, items: [], m: 0, n: 0, initialSortedEdges: [],
             isPlaying: false, // Ensure isPlaying is reset
             timerId: null,    // Ensure timerId is cleared
         };
-         if (animationState.timerId) { // Explicitly clear any lingering timer
-             clearTimeout(animationState.timerId);
-             animationState.timerId = null;
-         }
+         if (animationState.timerId) { clearTimeout(animationState.timerId); animationState.timerId = null; }
 
         // --- Configure Display Areas based on Algorithm Type ---
         const mainVisArea = document.getElementById('visualization-area');
         const extraVisArea = document.getElementById('extra-visualization-area');
+        const algoType = currentAlgorithm.type || 'default'; // Handle missing type
+        console.log(`[Setup Vis] Algorithm type: ${algoType}`);
 
-        if (currentAlgorithm.type === 'tree' || currentAlgorithm.type === 'graph') {
-            console.log("Configuring display for tree/graph type.");
+        if (algoType === 'tree' || algoType === 'graph' || algoType === 'dynamic-programming') {
+            console.log("[Setup Vis] Configuring display for tree/graph/dp type.");
             if (mainVisArea) mainVisArea.style.display = 'none';
-            if (extraVisArea) {
-                extraVisArea.style.display = 'block';
-                extraVisArea.innerHTML = ''; // Let setup populate this area
-            }
-        } else { // Default (bar-based) or others using main area
-            console.log("Configuring display for default/bar type.");
-            if (mainVisArea) {
-                mainVisArea.style.display = 'flex';
-                mainVisArea.innerHTML = ''; // Clear bar area
-            }
-            if (extraVisArea) {
-                extraVisArea.style.display = 'block'; // Still potentially used (e.g., count sort)
-                extraVisArea.innerHTML = ''; // Clear extra area
-            }
+            if (extraVisArea) { extraVisArea.style.display = 'block'; extraVisArea.innerHTML = ''; }
+            else { console.error("[Setup Vis] extraVisualizationArea not found!"); }
+        } else { // Default (bar-based)
+            console.log("[Setup Vis] Configuring display for default/bar type.");
+            if (mainVisArea) { mainVisArea.style.display = 'flex'; mainVisArea.innerHTML = ''; }
+            else { console.error("[Setup Vis] visualizationArea not found!"); }
+            if (extraVisArea) { extraVisArea.style.display = 'block'; extraVisArea.innerHTML = ''; }
+            else { console.error("[Setup Vis] extraVisualizationArea not found!"); }
         }
 
        // --- Run Algorithm Setup ---
+       let setupResult = null; // Define outside try
        try {
-            // Pass currentData, though graph/tree setups might ignore it
-            const setupResult = currentAlgorithm.setup(currentData);
+            console.log("[Setup Vis] Calling setup function...");
+            setupResult = currentAlgorithm.setup(currentData);
+            console.log("[Setup Vis] Setup function returned:", setupResult); // Log the result
+
+            // Validate the setup result structure minimally
+            if (!setupResult || typeof setupResult !== 'object') {
+                throw new Error("Setup function did not return a valid object.");
+            }
+            if (!Array.isArray(setupResult.steps)) {
+                 console.warn("[Setup Vis] setupResult.steps is not an array. Defaulting to empty array.");
+                 setupResult.steps = []; // Attempt recovery
+            }
 
             // Store results in animationState
-            animationState.steps = setupResult.steps || [];
-            // Store whatever 'elements' structure the setup returns
-            animationState.elements = setupResult.elements;
+            animationState.steps = setupResult.steps;
+            animationState.elements = setupResult.elements; // Store whatever setup returns
             animationState.countElements = setupResult.countElements || [];
             animationState.outputElements = setupResult.outputElements || [];
-            animationState.targetValue = setupResult.target; // For search algorithms
-            animationState.numNodes = setupResult.numNodes || 0; // For graph/matrix size
+            animationState.targetValue = setupResult.target;
+            animationState.numNodes = setupResult.numNodes || 0;
+            animationState.numItems = setupResult.numItems || 0;
+            animationState.capacity = setupResult.capacity || 0;
+            animationState.items = setupResult.items || [];
+            animationState.m = setupResult.m || 0;
+            animationState.n = setupResult.n || 0;
+            animationState.initialSortedEdges = setupResult.initialSortedEdges || [];
 
-            console.log(`Setup generated ${animationState.steps.length} steps.`);
+            console.log(`[Setup Vis] Stored setup results. Steps generated: ${animationState.steps.length}`);
 
             // Render the initial step if steps exist
             if (animationState.steps.length > 0) {
                 animationState.currentStep = 0;
-                // Pass the potentially complex 'elements' structure to renderStep
+                console.log("[Setup Vis] Rendering initial step (step 0)...");
                 currentAlgorithm.renderStep(animationState.steps[0], animationState.elements, animationState);
                 statusMessage.textContent = animationState.steps[0]?.message || 'Ready';
+                console.log("[Setup Vis] Initial step rendered.");
             } else {
-                // Handle cases where setup generates no steps (e.g., empty input)
-                const displayArea = (currentAlgorithm.type === 'tree' || currentAlgorithm.type === 'graph') ? extraVisArea : mainVisArea;
-                if (displayArea && !displayArea.innerHTML.includes('not implemented yet')) { // Avoid overwriting "not implemented" message
-                    displayArea.innerHTML = `<p class="text-gray-500 dark:text-gray-400 self-center p-4">No visualization steps generated (e.g., empty input).</p>`;
+                console.log("[Setup Vis] No steps generated by setup.");
+                const displayArea = (algoType === 'tree' || algoType === 'graph' || algoType === 'dynamic-programming') ? extraVisArea : mainVisArea;
+                if (displayArea && !displayArea.innerHTML.includes('not implemented yet')) {
+                    displayArea.innerHTML = `<p class="text-gray-500 dark:text-gray-400 self-center p-4">No visualization steps generated.</p>`;
                 }
                 statusMessage.textContent = 'No steps to visualize.';
             }
         } catch (error) {
-             console.error(`Error during setup for ${currentAlgorithm.name}:`, error);
-             const errorArea = (currentAlgorithm.type === 'tree' || currentAlgorithm.type === 'graph') ? extraVisArea : mainVisArea;
-             if(errorArea) errorArea.innerHTML = `<p class="text-red-500 dark:text-red-400 self-center p-4">Error during setup. Check console.</p>`;
-             statusMessage.textContent = 'Error during setup';
-             // Reset state parts that might be inconsistent
+             console.error(`[Setup Vis] Error during setup for ${currentAlgorithm.name}:`, error);
+             statusMessage.textContent = 'Error during setup'; // Display error message
+             // Attempt to display error in the correct area
+             const errorArea = (algoType === 'tree' || algoType === 'graph' || algoType === 'dynamic-programming') ? extraVisArea : mainVisArea;
+             if(errorArea) errorArea.innerHTML = `<p class="text-red-500 dark:text-red-400 self-center p-4">Error during setup: ${error.message}. Check console.</p>`;
+             // Reset state parts to prevent issues
              animationState.steps = [];
              animationState.elements = null;
-             animationState.countElements = [];
-             animationState.outputElements = [];
              animationState.currentStep = -1;
-             animationState.numNodes = 0;
+             // Reset other algorithm-specific state
+             animationState.countElements = []; animationState.outputElements = [];
+             animationState.targetValue = null; animationState.numNodes = 0;
+             animationState.numItems = 0; animationState.capacity = 0;
+             animationState.items = []; animationState.m = 0; animationState.n = 0;
+             animationState.initialSortedEdges = [];
+        } finally {
+             // Always update button states, regardless of success or failure
+             console.log("[Setup Vis] Updating button states.");
+             updateButtonStates();
         }
-
-        updateButtonStates(); // Update buttons based on the new state
     }
 
-    function resetVisualizationState() {
-        console.log("Resetting visualization state.");
+    function resetVisualizationState() { /* ... (same as before) ... */
+        console.log("[Reset Vis] Resetting visualization state.");
         pauseAnimation();
-        currentAlgorithmKey = null;
-        currentAlgorithm = null;
-        currentData = [];
-        animationState = {
-            ...animationState, // Keep speed
-            steps: [], elements: null, countElements: [], outputElements: [],
-            currentStep: -1, isPlaying: false, timerId: null, targetValue: null, numNodes: 0,
-        };
-        // Reset display areas
-        visualizationArea.innerHTML = '<p class="text-gray-500 dark:text-gray-400 self-center">Select an Algorithm</p>';
-        visualizationArea.style.display = 'flex'; // Show default area
-        extraVisualizationArea.innerHTML = '';
-        extraVisualizationArea.style.display = 'block'; // Keep visible but clear
-
-        // Reset UI text
-        currentAlgoTitle.textContent = 'Select an Algorithm';
-        codeBlock.innerHTML = '// Select an algorithm to view the code';
-        pseudoBlock.textContent = '// Select an algorithm to view the pseudocode';
-        statusMessage.textContent = '';
-        updateButtonStates(); // Disable buttons appropriately
-        // Clear active state from sidebar
+        currentAlgorithmKey = null; currentAlgorithm = null; currentData = [];
+        animationState = { ...animationState, steps: [], elements: null, countElements: [], outputElements: [], currentStep: -1, isPlaying: false, timerId: null, targetValue: null, numNodes: 0, numItems: 0, capacity: 0, items: [], m: 0, n: 0, initialSortedEdges: [] };
+        visualizationArea.innerHTML = '<p class="text-gray-500 dark:text-gray-400 self-center">Select an Algorithm</p>'; visualizationArea.style.display = 'flex';
+        extraVisualizationArea.innerHTML = ''; extraVisualizationArea.style.display = 'block';
+        currentAlgoTitle.textContent = 'Select an Algorithm'; codeBlock.innerHTML = '// Select algorithm...'; pseudoBlock.textContent = '// Select algorithm...';
+        statusMessage.textContent = ''; updateButtonStates();
         document.querySelectorAll('#algo-nav a.active').forEach(a => a.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300', 'font-semibold', 'active'));
     }
-
-    function switchTab(tabName) {
-        console.log(`Switching tab to: ${tabName}`);
-        tabButtons.forEach(button => {
-            const isActive = button.dataset.tab === tabName;
-            button.classList.toggle('active', isActive);
-            button.classList.toggle('border-blue-500', isActive);
-            button.classList.toggle('text-blue-600', isActive);
-            button.classList.toggle('dark:text-blue-400', isActive);
-            button.classList.toggle('border-transparent', !isActive);
-            button.classList.toggle('text-gray-500', !isActive);
-            button.classList.toggle('dark:text-gray-400', !isActive);
-            button.classList.toggle('hover:text-gray-700', !isActive);
-            button.classList.toggle('dark:hover:text-gray-300', !isActive);
-            button.classList.toggle('hover:border-gray-300', !isActive);
-            button.classList.toggle('dark:hover:border-gray-600', !isActive);
-        });
-        codeContent.style.display = tabName === 'code' ? 'block' : 'none';
-        pseudoContent.style.display = tabName === 'pseudo' ? 'block' : 'none';
-    }
-
-    function updateSpeed() {
-        animationState.speed = calculateDelay(speedSlider.value);
-        console.log(`Animation speed set to: ${animationState.speed}ms`);
-        if (animationState.isPlaying) {
-            clearTimeout(animationState.timerId);
-            animationState.timerId = null; // Clear timer ID
-            playAnimation(); // Restart loop with new speed
-        }
-    }
-
-    function togglePlayPause() {
-        if (animationState.isPlaying) {
-            console.log("Pausing animation.");
-            pauseAnimation();
-        } else {
-            console.log("Playing animation.");
-            playAnimation();
-        }
-    }
-
-    function playAnimation() {
-        // Ensure we can play: algorithm selected, steps exist, not already playing, not at the end
-        if (!currentAlgorithm || !animationState.steps || animationState.steps.length === 0 || animationState.isPlaying || animationState.currentStep >= animationState.steps.length - 1) {
-            if (animationState.currentStep >= animationState.steps.length - 1) {
-                console.log("Play called but already at the end or no steps.");
-                pauseAnimation(); // Ensure state is paused
-            } else if (animationState.isPlaying) {
-                 console.log("Play called while already playing.");
-            } else {
-                 console.log("Cannot play - no algorithm or steps.");
-            }
-            updateButtonStates(); // Ensure buttons reflect inability to play
-            return;
-        }
-
-        animationState.isPlaying = true;
-        playPauseBtn.textContent = 'Pause';
-        playPauseBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-        playPauseBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
-        updateButtonStates(); // Disable step/reset buttons
-
-        function step() {
-            // Double-check if still playing before proceeding
-            if (!animationState.isPlaying) {
-                 console.log("Animation stopped during step execution.");
-                 return;
-            }
-
-            if (animationState.currentStep < animationState.steps.length - 1) {
-                animationState.currentStep++;
-                try {
-                    // Render the current step
-                    currentAlgorithm.renderStep(animationState.steps[animationState.currentStep], animationState.elements, animationState);
-                    statusMessage.textContent = animationState.steps[animationState.currentStep]?.message || '';
-                } catch (error) {
-                     console.error(`Error rendering step ${animationState.currentStep} for ${currentAlgorithm.name}:`, error);
-                     statusMessage.textContent = `Error on step ${animationState.currentStep + 1}`;
-                     pauseAnimation(); // Stop on error
-                     return; // Exit step function
-                }
-                updateButtonStates(); // Update buttons (e.g., disable step back/forward if at ends)
-
-                // Schedule the next step
-                animationState.timerId = setTimeout(step, animationState.speed);
-            } else {
-                // Reached the end
-                console.log("Animation finished.");
-                pauseAnimation(); // Set state to paused, update buttons
-            }
-        }
-        // Clear any previous timer just in case before starting a new one
-        clearTimeout(animationState.timerId);
-        animationState.timerId = setTimeout(step, animationState.speed); // Start the loop
-    }
-
-    function pauseAnimation() {
-        if (animationState.timerId) {
-             clearTimeout(animationState.timerId); // Stop scheduled next step
-             animationState.timerId = null;
-        }
-        animationState.isPlaying = false; // Set state flag
-        playPauseBtn.textContent = 'Play'; // Update button text
-        playPauseBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
-        playPauseBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-        updateButtonStates(); // Re-enable step/reset buttons if applicable
-    }
-
-    function stepForward() {
-        // Ensure we can step forward
-        if (!currentAlgorithm || animationState.isPlaying || !animationState.steps || animationState.steps.length === 0 || animationState.currentStep >= animationState.steps.length - 1) {
-            console.log("Cannot step forward.");
-            return;
-        }
-        pauseAnimation(); // Ensure paused before stepping
-        animationState.currentStep++;
-        console.log(`Stepping forward to step: ${animationState.currentStep}`);
-        try {
-            currentAlgorithm.renderStep(animationState.steps[animationState.currentStep], animationState.elements, animationState);
-            statusMessage.textContent = animationState.steps[animationState.currentStep]?.message || '';
-        } catch (error) {
-             console.error(`Error rendering step ${animationState.currentStep} for ${currentAlgorithm.name}:`, error);
-             statusMessage.textContent = `Error on step ${animationState.currentStep + 1}`;
-        }
-        updateButtonStates(); // Update button enabled/disabled states
-    }
-
-    function stepBack() {
-        // Ensure we can step back
-        if (!currentAlgorithm || animationState.isPlaying || !animationState.steps || animationState.steps.length === 0 || animationState.currentStep <= 0) {
-            console.log("Cannot step back.");
-            return;
-        }
-        pauseAnimation(); // Ensure paused before stepping
-        animationState.currentStep--;
-        console.log(`Stepping back to step: ${animationState.currentStep}`);
-         try {
-            currentAlgorithm.renderStep(animationState.steps[animationState.currentStep], animationState.elements, animationState);
-            statusMessage.textContent = animationState.steps[animationState.currentStep]?.message || '';
-         } catch (error) {
-             console.error(`Error rendering step ${animationState.currentStep} for ${currentAlgorithm.name}:`, error);
-             statusMessage.textContent = `Error on step ${animationState.currentStep + 1}`;
-         }
-        updateButtonStates(); // Update button enabled/disabled states
-    }
-
-    function resetToStart() {
-        // Ensure there's something to reset
-        if (!currentAlgorithm || !animationState.steps || animationState.steps.length === 0) {
-            console.log("Nothing to reset.");
-            return;
-        }
-        console.log("Resetting to start (step 0).");
-        pauseAnimation(); // Ensure paused
-        animationState.currentStep = 0; // Go back to the first step
-        try {
-            // Render the first step
-            currentAlgorithm.renderStep(animationState.steps[0], animationState.elements, animationState);
-            statusMessage.textContent = animationState.steps[0]?.message || 'Ready';
-        } catch (error) {
-             console.error(`Error rendering step 0 for ${currentAlgorithm.name}:`, error);
-             statusMessage.textContent = `Error on step 1`;
-        }
-        updateButtonStates(); // Update buttons (e.g., disable step back)
-    }
-
-    function handleGenerateData() {
-        if (!currentAlgorithmKey) {
-            statusMessage.textContent = "Please select an algorithm first.";
-            return;
-        }
-        if (animationState.isPlaying) {
-             pauseAnimation(); // Pause if playing before generating new data
-        }
-        console.log(`Generating new data for: ${currentAlgorithmKey}`);
-        // Generate new base data (might be ignored by graph/tree setups)
-        currentData = generateSampleData(currentAlgorithmKey);
-        // Re-run the setup for the current algorithm
-        setupVisualization();
-    }
-
-    function updateButtonStates() {
+    function switchTab(tabName) { /* ... (same as before) ... */
+        console.log(`[Switch Tab] Switching to: ${tabName}`);
+        tabButtons.forEach(button => { const isActive = button.dataset.tab === tabName; button.classList.toggle('active', isActive); button.classList.toggle('border-blue-500', isActive); button.classList.toggle('text-blue-600', isActive); button.classList.toggle('dark:text-blue-400', isActive); button.classList.toggle('border-transparent', !isActive); button.classList.toggle('text-gray-500', !isActive); button.classList.toggle('dark:text-gray-400', !isActive); button.classList.toggle('hover:text-gray-700', !isActive); button.classList.toggle('dark:hover:text-gray-300', !isActive); button.classList.toggle('hover:border-gray-300', !isActive); button.classList.toggle('dark:hover:border-gray-600', !isActive); });
+        codeContent.style.display = tabName === 'code' ? 'block' : 'none'; pseudoContent.style.display = tabName === 'pseudo' ? 'block' : 'none';
+     }
+    function updateSpeed() { /* ... (same as before) ... */
+        animationState.speed = calculateDelay(speedSlider.value); console.log(`[Speed Update] Speed set to: ${animationState.speed}ms`); if (animationState.isPlaying) { clearTimeout(animationState.timerId); animationState.timerId = null; playAnimation(); }
+     }
+    function togglePlayPause() { /* ... (same as before) ... */
+        if (animationState.isPlaying) { console.log("[Play/Pause] Pausing."); pauseAnimation(); } else { console.log("[Play/Pause] Playing."); playAnimation(); }
+     }
+    function playAnimation() { /* ... (same as before, with logging) ... */
+        if (!currentAlgorithm || !animationState.steps || animationState.steps.length === 0 || animationState.isPlaying || animationState.currentStep >= animationState.steps.length - 1) { console.log("[Play] Cannot play.", {playing: animationState.isPlaying, steps: animationState.steps?.length, current: animationState.currentStep}); pauseAnimation(); updateButtonStates(); return; }
+        animationState.isPlaying = true; playPauseBtn.textContent = 'Pause'; playPauseBtn.classList.remove('bg-green-600', 'hover:bg-green-700'); playPauseBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600'); updateButtonStates();
+        function step() { if (!animationState.isPlaying) { console.log("[Play Step] Stopped during execution."); return; } if (animationState.currentStep < animationState.steps.length - 1) { animationState.currentStep++; try { currentAlgorithm.renderStep(animationState.steps[animationState.currentStep], animationState.elements, animationState); statusMessage.textContent = animationState.steps[animationState.currentStep]?.message || ''; } catch (error) { console.error(`[Play Step] Error rendering step ${animationState.currentStep}:`, error); statusMessage.textContent = `Error on step ${animationState.currentStep + 1}`; pauseAnimation(); return; } updateButtonStates(); animationState.timerId = setTimeout(step, animationState.speed); } else { console.log("[Play Step] Animation finished."); pauseAnimation(); } }
+        clearTimeout(animationState.timerId); animationState.timerId = setTimeout(step, animationState.speed);
+     }
+    function pauseAnimation() { /* ... (same as before, with logging) ... */
+        if (animationState.timerId) { clearTimeout(animationState.timerId); animationState.timerId = null; } animationState.isPlaying = false; playPauseBtn.textContent = 'Play'; playPauseBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600'); playPauseBtn.classList.add('bg-green-600', 'hover:bg-green-700'); updateButtonStates(); console.log("[Pause] Animation paused.");
+     }
+    function stepForward() { /* ... (same as before, with logging) ... */
+        if (!currentAlgorithm || animationState.isPlaying || !animationState.steps || animationState.steps.length === 0 || animationState.currentStep >= animationState.steps.length - 1) { console.log("[Step Fwd] Cannot step forward."); return; } pauseAnimation(); animationState.currentStep++; console.log(`[Step Fwd] Stepping to step: ${animationState.currentStep}`); try { currentAlgorithm.renderStep(animationState.steps[animationState.currentStep], animationState.elements, animationState); statusMessage.textContent = animationState.steps[animationState.currentStep]?.message || ''; } catch (error) { console.error(`[Step Fwd] Error rendering step ${animationState.currentStep}:`, error); statusMessage.textContent = `Error on step ${animationState.currentStep + 1}`; } updateButtonStates();
+     }
+    function stepBack() { /* ... (same as before, with logging) ... */
+        if (!currentAlgorithm || animationState.isPlaying || !animationState.steps || animationState.steps.length === 0 || animationState.currentStep <= 0) { console.log("[Step Back] Cannot step back."); return; } pauseAnimation(); animationState.currentStep--; console.log(`[Step Back] Stepping back to step: ${animationState.currentStep}`); try { currentAlgorithm.renderStep(animationState.steps[animationState.currentStep], animationState.elements, animationState); statusMessage.textContent = animationState.steps[animationState.currentStep]?.message || ''; } catch (error) { console.error(`[Step Back] Error rendering step ${animationState.currentStep}:`, error); statusMessage.textContent = `Error on step ${animationState.currentStep + 1}`; } updateButtonStates();
+     }
+    function resetToStart() { /* ... (same as before, with logging) ... */
+        if (!currentAlgorithm || !animationState.steps || animationState.steps.length === 0) { console.log("[Reset] Nothing to reset."); return; } console.log("[Reset] Resetting to start (step 0)."); pauseAnimation(); animationState.currentStep = 0; try { currentAlgorithm.renderStep(animationState.steps[0], animationState.elements, animationState); statusMessage.textContent = animationState.steps[0]?.message || 'Ready'; } catch (error) { console.error(`[Reset] Error rendering step 0:`, error); statusMessage.textContent = `Error on step 1`; } updateButtonStates();
+     }
+    function handleGenerateData() { /* ... (same as before, with logging) ... */
+        if (!currentAlgorithmKey) { statusMessage.textContent = "Please select an algorithm first."; return; } if (animationState.isPlaying) { pauseAnimation(); } console.log(`[Generate Data] Generating new data for: ${currentAlgorithmKey}`); currentData = generateSampleData(currentAlgorithmKey); setupVisualization();
+     }
+    function updateButtonStates() { /* ... (same as before) ... */
         const stepsAvailable = animationState.steps && animationState.steps.length > 0;
         const isAtStart = !stepsAvailable || animationState.currentStep <= 0;
         const isAtEnd = !stepsAvailable || animationState.currentStep >= animationState.steps.length - 1;
-
-        // Enable/disable based on state
-        playPauseBtn.disabled = !stepsAvailable || isAtEnd || !currentAlgorithm;
-        stepForwardBtn.disabled = !stepsAvailable || isAtEnd || animationState.isPlaying || !currentAlgorithm;
-        stepBackBtn.disabled = !stepsAvailable || isAtStart || animationState.isPlaying || !currentAlgorithm;
-        resetBtn.disabled = !stepsAvailable || isAtStart || animationState.isPlaying || !currentAlgorithm;
-        generateDataBtn.disabled = !currentAlgorithmKey || animationState.isPlaying; // Disable generate if playing
-
-        // Update Play/Pause button text and style
-        if (stepsAvailable && isAtEnd && !animationState.isPlaying) {
-            playPauseBtn.textContent = 'Done';
-            playPauseBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
-            playPauseBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-        } else if (!animationState.isPlaying) {
-            playPauseBtn.textContent = 'Play';
-            playPauseBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
-            playPauseBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-        } else { // Is playing
-            playPauseBtn.textContent = 'Pause';
-            playPauseBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-            playPauseBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
-        }
-
-        // Apply generic disabled styling
-        const buttonsToStyle = [playPauseBtn, stepForwardBtn, stepBackBtn, resetBtn, generateDataBtn];
-        buttonsToStyle.forEach(btn => {
-            if (btn.disabled) {
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-            } else {
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        });
-    }
+        playPauseBtn.disabled = !stepsAvailable || isAtEnd || !currentAlgorithm; stepForwardBtn.disabled = !stepsAvailable || isAtEnd || animationState.isPlaying || !currentAlgorithm; stepBackBtn.disabled = !stepsAvailable || isAtStart || animationState.isPlaying || !currentAlgorithm; resetBtn.disabled = !stepsAvailable || isAtStart || animationState.isPlaying || !currentAlgorithm; generateDataBtn.disabled = !currentAlgorithmKey || animationState.isPlaying;
+        if (stepsAvailable && isAtEnd && !animationState.isPlaying) { playPauseBtn.textContent = 'Done'; playPauseBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600'); playPauseBtn.classList.add('bg-green-600', 'hover:bg-green-700'); } else if (!animationState.isPlaying) { playPauseBtn.textContent = 'Play'; playPauseBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600'); playPauseBtn.classList.add('bg-green-600', 'hover:bg-green-700'); } else { playPauseBtn.textContent = 'Pause'; playPauseBtn.classList.remove('bg-green-600', 'hover:bg-green-700'); playPauseBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600'); }
+        const buttonsToStyle = [playPauseBtn, stepForwardBtn, stepBackBtn, resetBtn, generateDataBtn]; buttonsToStyle.forEach(btn => { if (btn.disabled) { btn.classList.add('opacity-50', 'cursor-not-allowed'); } else { btn.classList.remove('opacity-50', 'cursor-not-allowed'); } });
+     }
 
     // --- Event Listeners ---
-    algoNav.addEventListener('click', (e) => {
-        // Handle clicks on algorithm links within the sidebar details/summary structure
-        let targetLink = e.target.closest('a[data-algo]'); // Find the closest link with data-algo
-        if (targetLink) {
-            e.preventDefault();
-            const algoKey = targetLink.dataset.algo;
-            console.log(`Sidebar link clicked: ${algoKey}`);
-            // Remove active class from previously active link
-            document.querySelectorAll('#algo-nav a.active').forEach(a => a.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300', 'font-semibold', 'active'));
-            // Add active class to the clicked link
-            targetLink.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300', 'font-semibold', 'active');
-            selectAlgorithm(algoKey);
-        } else if (e.target.tagName === 'SUMMARY') {
-           // Allow details/summary toggle without preventing default
-        }
-        // Ignore clicks that are not on links or summaries
-    });
-
-    darkModeToggle.addEventListener('change', () => {
-        if (darkModeToggle.checked) {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('darkMode', 'enabled');
-            console.log("Dark mode enabled");
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('darkMode', 'disabled');
-            console.log("Dark mode disabled");
-        }
-    });
-
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => switchTab(button.dataset.tab));
-    });
-
+    algoNav.addEventListener('click', (e) => { /* ... (same as before) ... */
+        let targetLink = e.target.closest('a[data-algo]'); if (targetLink) { e.preventDefault(); const algoKey = targetLink.dataset.algo; console.log(`[Sidebar] Link clicked: ${algoKey}`); document.querySelectorAll('#algo-nav a.active').forEach(a => a.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300', 'font-semibold', 'active')); targetLink.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300', 'font-semibold', 'active'); selectAlgorithm(algoKey); } else if (e.target.tagName === 'SUMMARY') { /* Allow toggle */ }
+     });
+    darkModeToggle.addEventListener('change', () => { /* ... (same as before) ... */
+        if (darkModeToggle.checked) { document.documentElement.classList.add('dark'); localStorage.setItem('darkMode', 'enabled'); console.log("[Dark Mode] Enabled"); } else { document.documentElement.classList.remove('dark'); localStorage.setItem('darkMode', 'disabled'); console.log("[Dark Mode] Disabled"); }
+     });
+    tabButtons.forEach(button => { button.addEventListener('click', () => switchTab(button.dataset.tab)); });
     playPauseBtn.addEventListener('click', togglePlayPause);
     stepForwardBtn.addEventListener('click', stepForward);
     stepBackBtn.addEventListener('click', stepBack);
@@ -567,29 +348,10 @@ document.addEventListener('DOMContentLoaded', () => {
     speedSlider.addEventListener('input', updateSpeed);
 
     // --- Initial Setup ---
-    // Dark Mode Initialization
-    if (localStorage.getItem('darkMode') === 'enabled' ||
-       (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        darkModeToggle.checked = true;
-        document.documentElement.classList.add('dark');
-    } else {
-        darkModeToggle.checked = false;
-        document.documentElement.classList.remove('dark');
-    }
+    if (localStorage.getItem('darkMode') === 'enabled' || (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) { darkModeToggle.checked = true; document.documentElement.classList.add('dark'); } else { darkModeToggle.checked = false; document.documentElement.classList.remove('dark'); }
+    animationState.speed = calculateDelay(speedSlider.value); switchTab('code'); resetVisualizationState(); console.log("Algorithm Visualizer Initialized.");
 
-    animationState.speed = calculateDelay(speedSlider.value); // Set initial speed
-    switchTab('code'); // Default to code tab
-    resetVisualizationState(); // Initialize UI to default state
-    console.log("Algorithm Visualizer Initialized.");
-
-    // Expose main state/functions if needed by other modules (like heap-ops)
-    window.algorithmVisualizerMain = {
-        animationState: animationState,
-        updateButtonStates: updateButtonStates,
-        resetToStart: resetToStart,
-        playAnimation: playAnimation,
-        pauseAnimation: pauseAnimation,
-        // Add other functions if needed by specific algorithm modules
-   };
+    // Expose main state/functions if needed
+    window.algorithmVisualizerMain = { animationState: animationState, updateButtonStates: updateButtonStates, resetToStart: resetToStart, playAnimation: playAnimation, pauseAnimation: pauseAnimation };
 
 }); // End DOMContentLoaded
