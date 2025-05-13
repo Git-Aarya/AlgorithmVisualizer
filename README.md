@@ -111,5 +111,5 @@ To run this project locally:
 
 No special build steps or dependencies are required beyond a web browser, as Tailwind CSS is included via a CDN.
 
-
+https://git-aarya.github.io/AlgorithmVisualizer/
 ![AlgorithmVisualizer ScreenShot](AlgorithmVisualizer-SS.png)
